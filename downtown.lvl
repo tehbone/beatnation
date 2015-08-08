@@ -1,0 +1,20 @@
+12
+
+800.0 800.0 0.0
+
+0.01 0.01 0.01
+
+0
+0
+0
+0
+0
+-600.0
+5
+Downtown
+../textures/sky.tga
+../textures/roadtexture.tga
+../levels/downtown.MD3
+../levels/downtown.MD3
+12
+../levels/downtown_spawn.MD3
