@@ -62,6 +62,36 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\camera.cpp" />
+    <ClCompile Include="src\collision.cpp" />
+    <ClCompile Include="src\controller.cpp" />
+    <ClCompile Include="src\gameapp.cpp" />
+    <ClCompile Include="src\gfx.cpp" />
+    <ClCompile Include="src\level.cpp" />
+    <ClCompile Include="src\lights.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\model.cpp" />
+    <ClCompile Include="src\objects.cpp" />
+    <ClCompile Include="src\physics.cpp" />
+    <ClCompile Include="src\targa.cpp" />
+    <ClCompile Include="src\t_utils.cpp" />
+    <ClCompile Include="src\utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\camera.hpp" />
+    <ClInclude Include="src\collision.hpp" />
+    <ClInclude Include="src\controller.hpp" />
+    <ClInclude Include="src\gameapp.hpp" />
+    <ClInclude Include="src\gfx.hpp" />
+    <ClInclude Include="src\level.hpp" />
+    <ClInclude Include="src\light.hpp" />
+    <ClInclude Include="src\main.hpp" />
+    <ClInclude Include="src\model.hpp" />
+    <ClInclude Include="src\objects.hpp" />
+    <ClInclude Include="src\physics.hpp" />
+    <ClInclude Include="src\targa.hpp" />
+    <ClInclude Include="src\t_utils.hpp" />
+    <ClInclude Include="src\utils.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
