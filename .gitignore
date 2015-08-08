@@ -1,0 +1,9 @@
+# MSVC ignores
+*.vcxproj.filters
+*.sdf
+*.suo
+Debug/*
+Release/*
+
+# General C/C++ ignores
+**/*.o
