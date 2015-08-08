@@ -12,7 +12,7 @@
 // Started versioning - GS
 
 #include <windows.h>
-#include "Camera.h"
+#include "camera.hpp"
 
 #include <gl/gl.h>
 //#include <gl/glaux.h>

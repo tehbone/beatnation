@@ -21,14 +21,14 @@
 #include <gl/glaux.h>
 #include <cg/cg.h>
 #include <cg/cggl.h>
-#include "collision.h"
-#include "objects.h"
-#include "utils.h"
-#include "Camera.h"
+#include "collision.hpp"
+#include "objects.hpp"
+#include "utils.hpp"
+#include "camera.hpp"
 #include <stdio.h>
 #include <fstream.h>
-#include "light.h"
-#include "model.h"
+#include "light.hpp"
+#include "model.hpp"
 
 //level state defines
 #define LVL_ACTIVE 0

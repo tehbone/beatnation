@@ -16,7 +16,7 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 
-#include "utils.h"
+#include "utils.hpp"
 
 
 //Light Types

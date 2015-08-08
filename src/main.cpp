@@ -21,15 +21,15 @@
 //#include "main.h"
 
 #include <stdio.h>
-#include "physics.h"
+#include "physics.hpp"
 #include <cstdlib>
-#include "gfx.h"
-#include "Camera.h"
-#include "objects.h"
-#include "level.h"
-#include "gameapp.h"
+#include "gfx.hpp"
+#include "camera.hpp"
+#include "objects.hpp"
+#include "level.hpp"
+#include "gameapp.hpp"
 #include "t_utils.cpp"
-#include "utils.h"
+#include "utils.hpp"
 
 //Definitions
 /*CGparameter color, position,modelViewProjMatrix;

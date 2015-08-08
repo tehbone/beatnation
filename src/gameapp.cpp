@@ -12,8 +12,8 @@
 // 4/12/2004
 // Started versioning - GS
 
-#include "GameApp.h"
-#include "targa.h"
+#include "gameapp.hpp"
+#include "targa.hpp"
 
 StringMap *GameApp::animationResource = NULL;
 StringMap *GameApp::modelResource = NULL;

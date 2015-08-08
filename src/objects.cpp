@@ -21,8 +21,8 @@
 #include <gl/glaux.h>
 #include <cg/cg.h>
 #include <cg/cggl.h>
-#include "objects.h"
-#include "collision.h"
+#include "objects.hpp"
+#include "collision.hpp"
 #include <math.h>
 
 

@@ -6,8 +6,8 @@
 // Copied newer physics w/ collisions over - GS
 
 #include <stdio.h>
-#include "utils.h"
-#include "physics.h"
+#include "utils.hpp"
+#include "physics.hpp"
 #include "t_utils.cpp"
 
 

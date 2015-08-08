@@ -32,7 +32,7 @@ public:
 
 };
 
-#include "Camera.h"
-#include "objects.h"
+#include "camera.hpp"
+#include "objects.hpp"
 
 #endif

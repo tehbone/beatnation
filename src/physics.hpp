@@ -4,9 +4,9 @@
 // 4/12/2004
 // Copied newer physics w/ collisions over - GS
 
-#include "collision.h"
-#include "t_utils.h"
-#include "utils.h"
+#include "collision.hpp"
+#include "t_utils.hpp"
+#include "utils.hpp"
 
 #ifndef PHYSICS_H
 #define PHYSICS_H

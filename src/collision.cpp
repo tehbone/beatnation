@@ -13,9 +13,9 @@
 #include <gl/gl.h>
 #include <gl/glaux.h>
 //#include "memtrack.cpp"
-#include "gfx.h"
-#include "collision.h"
-#include "model.h"
+#include "gfx.hpp"
+#include "collision.hpp"
+#include "model.hpp"
 #include "t_utils.cpp"
 
 

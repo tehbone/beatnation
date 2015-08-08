@@ -18,12 +18,12 @@
 #ifndef OBJECTS_H
 #define OBJECTS_H
 
-#include "physics.h"
-#include "utils.h"
-#include "controller.h"
+#include "physics.hpp"
+#include "utils.hpp"
+#include "controller.hpp"
 //#include <cg/cg.h>
 //#include <cg/cggl.h>
-#include "model.h"
+#include "model.hpp"
 #include <stdio.h>
 #include <fstream>
 

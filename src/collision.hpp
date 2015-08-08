@@ -9,10 +9,10 @@
 #ifndef COLLISION_H
 #define COLLISION_H
 
-#include "gfx.h"
-#include "utils.h"
-#include "model.h" // For the mesh
-#include "t_utils.h"
+#include "gfx.hpp"
+#include "utils.hpp"
+#include "model.hpp" // For the mesh
+#include "t_utils.hpp"
 
 // This constant determines how many objects should be added to a 
 // OctTree space before the objects in that space are partitioned.
@@ -333,6 +333,6 @@ private:
 
 };
 
-#include "physics.h"
+#include "physics.hpp"
 
 #endif

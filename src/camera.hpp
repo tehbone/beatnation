@@ -1,6 +1,6 @@
 /****************************************
 *										*
-*				Camera.h				*
+*				Camera.hpp				*
 *	Class defines and methods for the	*
 *	Camera system						*
 *										*
@@ -16,8 +16,8 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "Utils.h"
-#include "Objects.h"
+#include "utils.hpp"
+#include "objects.hpp"
 #include <gl/gl.h>
 //#include <gl/glaux.h>
 
