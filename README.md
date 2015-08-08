@@ -11,14 +11,18 @@ attempt to finish some of the features that were left either unimplemented or
 completely unfinished. Looking at the code, about 98% of the features were left
 unimplemented.
 
-# Concept (paraphrased from early design documents)
+## Concept (paraphrased from early design documents)
 
 Set in a distant future where the man controls all forms of rhythmic entertainment...
 OK I'm going to stop here. I don't remember the original design document, but the
 game was supposed to be a Smash-bros meets Power Stone brawler, with some beat
 mechanics to it, a-la Def Jam Fight for NY.
 
-# What's left?
+## What's left?
 
 Everything
+
+# Major Items
+
+Get it to compile :)
 
