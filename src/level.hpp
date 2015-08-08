@@ -18,15 +18,11 @@
 
 #include <windows.h>
 #include <gl/gl.h>
-#include <gl/glaux.h>
-#include <cg/cg.h>
-#include <cg/cggl.h>
 #include "collision.hpp"
 #include "objects.hpp"
 #include "utils.hpp"
 #include "camera.hpp"
 #include <stdio.h>
-#include <fstream.h>
 #include "light.hpp"
 #include "model.hpp"
 

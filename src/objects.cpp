@@ -18,9 +18,6 @@
 
 #include <windows.h>
 #include <gl/gl.h>
-#include <gl/glaux.h>
-#include <cg/cg.h>
-#include <cg/cggl.h>
 #include "objects.hpp"
 #include "collision.hpp"
 #include <math.h>

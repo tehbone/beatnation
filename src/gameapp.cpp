@@ -457,14 +457,15 @@ unsigned int GameApp::LoadTexture(char *filename)
 {
 	unsigned int texID;
 	FILE* file = NULL;
-	file = fopen(filename,"r");
-	if(!file)
-	{
-		file = file;
-	}
-	fclose(file);
-	AUX_RGBImageRec *tex;
-	tex = auxDIBImageLoad(filename);
+	return -1;
+	//file = fopen(filename,"r");
+	
+	// TODO: anything.
+	//AUX_RGBImageRec *tex;
+	//tex = auxDIBImageLoad(filename);
+	/* STUB CODE HERE SINCE I DON'T REMEMBER WHERE THE ORIGINAL CODE CAME FROM */
+	/* read header */
+#if 0
 	glGenTextures(1,&texID);
 	glBindTexture(GL_TEXTURE_2D,texID);
 	glTexImage2D(GL_TEXTURE_2D,0,3,tex->sizeX,tex->sizeY,0,GL_RGB, GL_UNSIGNED_BYTE,tex->data);
@@ -478,7 +479,7 @@ unsigned int GameApp::LoadTexture(char *filename)
 	free(tex);
 	tex = NULL;
 	return texID;
-	
+#endif
 }
 
 void GameApp::Startup(float time)

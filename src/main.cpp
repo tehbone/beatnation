@@ -12,8 +12,10 @@
 //Or use following code:
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "glu32.lib")
-#pragma comment(lib, "glaux.lib")
-#pragma comment(lib, "winmm.lib")
+#if 0
+# pragma comment(lib, "glaux.lib")
+# pragma comment(lib, "winmm.lib")
+#endif
 #define MAXPOS 90.0f
 
 // include the initialization etc code

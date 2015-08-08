@@ -11,7 +11,6 @@
 #include <cstdlib>
 #include <windows.h>
 #include <gl/gl.h>
-#include <gl/glaux.h>
 //#include "memtrack.cpp"
 #include "gfx.hpp"
 #include "collision.hpp"
