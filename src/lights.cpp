@@ -11,7 +11,7 @@
 // 4/12/2004
 // Started versioning - GS
 
-#include "light.h"
+#include "light.hpp"
 #include <windows.h>
 
 void Light::computeColor(Vector3f norm, Vector3f c, Vector3f ambient, Vector3f p, float* out)

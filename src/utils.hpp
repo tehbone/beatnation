@@ -19,7 +19,7 @@
 #include <gl/gl.h>
 //#include <gl/glaux.h>
 #include <gl/glu.h>
-#include "targa.h"
+#include "targa.hpp"
 
 extern bool lbuttondown;
 extern HDC hDC;

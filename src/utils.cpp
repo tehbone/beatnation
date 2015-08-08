@@ -5,7 +5,7 @@
 *										*
 ****************************************/
 
-#include "utils.h"
+#include "utils.hpp"
 
 
 Vector3f Vector3f::cross(const Vector3f v)

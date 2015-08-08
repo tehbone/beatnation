@@ -1,6 +1,6 @@
 //targa.cpp
 //yeah, I know, I'm getting lazy.
-#include "targa.h"
+#include "targa.hpp"
 
 targaData *LoadTarga(char* filename)
 {

@@ -11,7 +11,7 @@
 // 4/12/2004
 // Started versioning - GS
 
-#include "model.h"
+#include "model.hpp"
 
 void Model::UpdateTags(int f1, int f2, float offset)
 {

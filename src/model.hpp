@@ -15,11 +15,11 @@
 
 
 #include <stdio.h>
-#include "utils.h"
+#include "utils.hpp"
 #include <windows.h>
 #include <gl/gl.h>
 //#include <gl/glaux.h>
-#include "Light.h"
+#include "light.hpp"
 #ifndef MODEL_H
 #define MODEL_H
 

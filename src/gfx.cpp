@@ -12,7 +12,7 @@
 // Started versioning - GS
 
 
-#include "gfx.h"
+#include "gfx.hpp"
 
 
 /*void initCG()

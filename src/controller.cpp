@@ -4,8 +4,8 @@
 // 4/12/2004
 // Started versioning - GS
 
-#include "controller.h"
-#include "physics.h"
+#include "controller.hpp"
+#include "physics.hpp"
 #include "t_utils.cpp"
 
 

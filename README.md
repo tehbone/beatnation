@@ -24,5 +24,5 @@ Everything
 
 # Major Items
 
-Get it to compile :)
+It compiles, but it will crash hard. If you don't believe me, compile and try.
 

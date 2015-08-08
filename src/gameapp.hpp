@@ -18,12 +18,9 @@
 
 #include <windows.h>
 #include <gl/gl.h>
-#include <gl/glaux.h>
 #include <gl/glu.h>
-#include <cg/cg.h>
-#include <cg/cggl.h>
-#include "level.h"
-#include "light.h"
+#include "level.hpp"
+#include "light.hpp"
 
 #define GAME_STARTUP 0
 #define GAME_MAIN_MENU 1

@@ -11,10 +11,11 @@
 // 4/12/2004
 // Started versioning - GS
 
-#include "level.h"
-#include "controller.h"
+#include <fstream>
+#include "level.hpp"
+#include "controller.hpp"
 #include "t_utils.cpp"
-#include "gameapp.h"
+#include "gameapp.hpp"
 
 void Level::AddItem(Item* item)
 {
@@ -77,7 +78,7 @@ void Level::initialize(char *filename,int width, int height)
 	
 	
 	Vector3f tempVector;
-	ifstream levelfile(filename);
+	std::ifstream levelfile(filename);
 	//BEGIN PARSING
 	//MAXCHARACTERS
 	levelfile >> MAXCHARS;
