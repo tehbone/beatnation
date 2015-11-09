@@ -1,38 +1,30 @@
-/************************************
-*	Versioning Information			*
-************************************/
-// 4/12/2004
-// Started versioning - GS
-
-#ifndef CONTROLLER_HQ
-#define CONTROLLER_HQ
+#ifndef CONTROLLER_HPP_
+#define CONTROLLER_HPP_
 
 class Object;
 class Camera;
 
 class Controller {
+public:
+	// FIXME: Should be private
+	Object *controlledObject;
 
 public:
-	Controller(){ return; }
-
-	Object* controlledObject;
-
-	virtual bool ProcessKeys(bool* keys, float time){ return false; } 
-
+	Controller() {}
+	virtual ~Controller() {}
+	virtual bool ProcessKeys(bool *keys, float time) { return false; } 
 };
 
 class PlayerController : public Controller {
-
 public:
-	PlayerController(){ Controller(); }
-
-	Camera* controlsCam;
+	// FIXME: Should be private
+	Camera *controlsCam;
+public:
+	PlayerController() {}
+	virtual ~Controller() {}
 
 	virtual bool ProcessKeys(bool* keys, float time);
-
 };
 
-#include "camera.hpp"
-#include "objects.hpp"
+#endif /* CONTROLLER_HPP_ */
 
-#endif

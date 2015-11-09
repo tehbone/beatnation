@@ -1,20 +1,8 @@
-/********************************************
-*											*
-*				Level.h						*
-*	declarations for everything that deals	*
-*		with levels							*
-*											*
-********************************************/
-
-/************************************
-*	Versioning Information			*
-************************************/
-// 4/12/2004
-// Modified update and initialize functions, objects have to be registered with
-// the physicsengine stored in the level, then updated automatically - GS
-
-#ifndef LEVEL_H
-#define LEVEL_H
+/**
+ * @file Declarations for everything that deals with levels.
+ */
+#ifndef LEVEL_HPP_
+#define LEVEL_HPP_
 
 #include <windows.h>
 #include <gl/gl.h>
@@ -36,44 +24,12 @@
 
 #define CHARS 4
 
-class Poly
-{
-public:
+struct Poly {
 	Vector3f verts[4];
 	Vector3f norm[4];
 };
 	
-class Level
-{
-public:
-	void setPlayer(Player* p);
-	void respawn(Player* p,bool death = true);
-	void initialize(char* filename,int width, int height);
-	void AddChar(Player *p);
-	void AddItem(Item *i);
-	void draw(CGparameter color);
-	bool Update(bool *keys);
-	void cleanup();
-	
-
-	//members
-	OctTree* collideSpace;
-	OctTree* playerSpace;
-	OctTree* itemSpace;
-
-	// List of all the spaces that undergo collisions
-	DLinkedList<OctTree*>* physicsSpaces;
-	DLinkedList<Object*>* characterList;
-    DLinkedList<Object*>* projectileList;
-	DLinkedList<Object*>* itemList;
-
-	CollideObject *boxList;
-
-	SpringPhysicsEngine engine;
-
-	Object* player;
-	int MAXCHARS;
-private:
+class Level {
 	int state;
 	int width, height;
 	Camera* cam;
@@ -111,9 +67,30 @@ private:
 	unsigned int go;
 	Model *podium;
 	Player* winner;
+
+public:
+	//FIXME: Should be private
+	OctTree* collideSpace;
+	OctTree* playerSpace;
+	OctTree* itemSpace;
+	DLinkedList<OctTree*>* physicsSpaces;
+	DLinkedList<Object*>* characterList;
+	DLinkedList<Object*>* projectileList;
+	DLinkedList<Object*>* itemList;
+	CollideObject *boxList;
+	SpringPhysicsEngine engine;
+	Object* player;
+	int MAXCHARS;
+
+public:
+	void setPlayer(Player* p);
+	void respawn(Player* p,bool death = true);
+	void initialize(char* filename,int width, int height);
+	void AddChar(Player *p);
+	void AddItem(Item *i);
+	void draw(CGparameter color);
+	bool Update(bool *keys);
+	void cleanup();
 };
+#endif /* LEVEL_HPP_ */
 
-
-
-
-#endif
