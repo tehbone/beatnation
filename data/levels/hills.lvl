@@ -1,0 +1,20 @@
+6
+
+800.0 800.0 0.0
+
+0.01 0.01 0.01
+
+0
+0
+0
+0
+0
+-600.0
+20
+hills
+none
+../textures/musewall.tga
+../levels/hills.MD3
+../levels/hills.MD3
+6
+../levels/hills_spawn.MD3
