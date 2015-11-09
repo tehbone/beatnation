@@ -7,6 +7,13 @@
 #include "t_utils.cpp"
 #include "gameapp.hpp"
 
+//FIXME_SDL: yeah
+#define VK_F4 (61 | (1 << 30))
+#define VK_F3 (60 | (1 << 30))
+#define VK_F5 (62 | (1 << 30))
+#define VK_NUMPAD7 (95 | (1 << 30))
+#define VK_NUMPAD9 (97 | (1 << 30))
+
 void
 Level::AddItem(Item *item)
 {
@@ -187,7 +194,7 @@ Level::draw(CGparameter color)
 	static float drawtimer = 0;
 	int i;
 	static long lastTickCount = 0;
-	long thisTickCount = GetTickCount();
+	long thisTickCount = 0; //FIXME_SDL: GetTickCount();
 	float time = (thisTickCount - lastTickCount)/1000.0f;
 	lastTickCount = thisTickCount;
 
@@ -470,7 +477,7 @@ Level::Update(bool *keys)
 	static float camAngle = 0.0f;
 	static long lastTickCount = 0;
 	
-	long TickCount = GetTickCount();
+	long TickCount = 0; //FIXME_SDL: GetTickCount();
 	float time;
 	if (lastTickCount == 0)
 		lastTickCount = TickCount-5;
@@ -493,7 +500,6 @@ Level::Update(bool *keys)
 	}
 	//chose Dynamic Camera  (still being worked on)
 	if (keys[VK_F3]) {
-	{
 		cam[0].switchtoView(DYNAMIC_CAMERA,temp,(Object*)player);
 		keys[VK_F3] = false;
 	}
@@ -568,7 +574,7 @@ Level::Update(bool *keys)
 			if (!hasmoved) {
 				controlsCam = cam[0];
 			} else {
-				if (cam[0].type = FREE_CAMERA)
+				if (cam[0].type == FREE_CAMERA)
 					controlsCam = cam[0];
 			}
 	

@@ -21,7 +21,7 @@ public:
 	Camera *controlsCam;
 public:
 	PlayerController() {}
-	virtual ~Controller() {}
+	virtual ~PlayerController() {}
 
 	virtual bool ProcessKeys(bool* keys, float time);
 };

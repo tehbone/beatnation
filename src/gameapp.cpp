@@ -2,16 +2,23 @@
  * @file gameapp.cpp
  * Defines for everything dealing with the main game app.
  */
-#include <gl/gl.h>
-#include <gl/glu.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 #include "gameapp.hpp"
 #include "level.hpp"
 #include "light.hpp"
+#include "objects.hpp"
 #include "targa.hpp"
+#include "utils.hpp"
 
 StringMap *GameApp::animationResource;
 StringMap *GameApp::modelResource;
 unsigned int GameApp::font;
+
+struct point {
+	unsigned int x;
+	unsigned int y;
+};
 
 GameApp::GameApp(int w, int h, bool *keys) : width(w), height(h)
 {
@@ -23,7 +30,7 @@ GameApp::GameApp(int w, int h, bool *keys) : width(w), height(h)
 	state = GAME_STARTUP;
 	level = new Level();
 	level->initialize("downtown.lvl",width,height);
-	SetCursorPos(width/2,height/2);
+	//SetCursorPos(width/2,height/2);
 	textures[GAME_STARTUP] = LoadTexture("../Textures/logo.bmp");
 	textures[GAME_MAIN_MENU] = LoadTexture("../Textures/beatnation7.bmp");
 	textures[GAME_LOADING] = LoadTexture("../Textures/loadingicon.bmp");
@@ -34,13 +41,13 @@ GameApp::GameApp(int w, int h, bool *keys) : width(w), height(h)
 	quit = LoadTGATexture("../Textures/exit.tga");
 	back = LoadTGATexture("../Textures/back.tga");
 	OK = LoadTGATexture("../Textures/OK.tga");
-	HFONT f = CreateFont(-12,0,0,0,FW_BOLD,false,false,false,ANSI_CHARSET,OUT_TT_PRECIS,CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,FF_DONTCARE|DEFAULT_PITCH,"BeatNat!on");
+	//HFONT f = CreateFont(-12,0,0,0,FW_BOLD,false,false,false,ANSI_CHARSET,OUT_TT_PRECIS,CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,FF_DONTCARE|DEFAULT_PITCH,"BeatNat!on");
 	font = glGenLists(256);
 
-	HFONT oldfont = (HFONT)SelectObject(hDC,f);
+	//HFONT oldfont = (HFONT)SelectObject(hDC,f);
 	//wglUseFontBitmaps(hDC,32,96,font);
-	if (!wglUseFontOutlines(hDC,0,255,font,0.0f,0.2f,WGL_FONT_POLYGONS,gmf))
-		gmf[0] = gmf[0];
+	//if (!wglUseFontOutlines(hDC,0,255,font,0.0f,0.2f,WGL_FONT_POLYGONS,gmf))
+	//	gmf[0] = gmf[0];
 	//SelectObject(hDC,oldfont);
 	//DeleteObject(f);
 }
@@ -116,10 +123,10 @@ GameApp::RenderScene()
 	Vector3f c(1.0f,1.0f,1.0f);
 	Light light(pos,c);
 	static bool up = false;
-	static long lastTickCount = GetTickCount();
+	static long lastTickCount = 0; //FIXME: GetTickCount();
 	static float charfloat = 0.0f;
 	int i;
-	long thisTickCount = GetTickCount();
+	long thisTickCount = 0; //FIXME: GetTickCount();
 	float time = (float)(thisTickCount-lastTickCount)/1000.0f;
 	float xratio = (float)width/1024.0f;
 	float yratio = (float)height/768.0f;
@@ -127,7 +134,8 @@ GameApp::RenderScene()
 	lastTickCount = thisTickCount;
 	CGparameter color;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);			// Clear The Screen And The Depth Buffer
-	POINT p;
+	//POINT p;
+	point p = { 512, 384 }; //FIXME:
 	static float angle = 0.0f;
 	
 	
@@ -135,7 +143,7 @@ GameApp::RenderScene()
 	static int startupstate = 0;
 	static float splashtime = 0;
 	float blah = charfloat;
-	GetCursorPos(&p);
+	//GetCursorPos(&p);
 	switch(state) {
 	case GAME_STARTUP:
 		glMatrixMode(GL_PROJECTION);
@@ -161,7 +169,7 @@ GameApp::RenderScene()
 			brightness-=time;
 			if (brightness < 0.0f) {
 				brightness = 0.0f;
-				SetCursorPos(width/2,height/2);
+				//SetCursorPos(width/2,height/2);
 				state = GAME_MAIN_MENU;
 				brightness = 0.0f;
 				startupstate = 0;
@@ -195,7 +203,7 @@ GameApp::RenderScene()
 				startupstate = 1;
 			}
 			if (lbuttondown && (float)p.x > 100.0f*xratio && (float)p.x < 300.0f*xratio && (float)p.y < 640.0f*yratio && (float)p.y > 560.0f*yratio) {
-				PostQuitMessage(0);
+				//FIXME: PostQuitMessage(0);
 			}
 			break;
 		case 1:
@@ -210,6 +218,7 @@ GameApp::RenderScene()
 			Vector3f temp(0.0f,0.0f,0.0f);
 			chosenChar = 0;
 			Player *tempdata[50];
+#if 0
 			WIN32_FIND_DATA findData;
 			HANDLE tempHand = FindFirstFile("../characters/*.chr",&findData);
 			numChars = 1;
@@ -226,6 +235,7 @@ GameApp::RenderScene()
 			for (i = 0; i < numChars; i++) {
 				characters[i] = tempdata[i];
 			}
+#endif
 			break;
 		}
 
@@ -385,7 +395,7 @@ GameApp::RenderScene()
 		glTexCoord2f(1.0f,1.0f); glVertex2f(30*xratio,0);
 		glEnd();
 
-		if (keys[VK_RETURN]) {
+		if (keys['S'/* VK_RETURN*/]) {
 			state = GAME_MAIN;
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();									    
@@ -496,7 +506,7 @@ GameApp::Startup(float time)
 		brightness-=time;
 		if (brightness < 0.0f) {
 			brightness = 0.0f;
-			SetCursorPos(width/2,height/2);
+			//SetCursorPos(width/2,height/2);
 			state = GAME_MAIN_MENU;
 			brightness = 0.0f;
 			startupstate = 0;
@@ -520,8 +530,9 @@ GameApp::MainMenu(float time)
 	float brightness = 0.0f;
 	int startupstate = 0;
 	int i;
-	POINT p;
-	GetCursorPos(&p);
+	//POINT p;
+	point p = { 512, 384 }; //FIXME:
+	//GetCursorPos(&p);
 	float xratio = (float)width/1024.0f;
 	float yratio = (float)height/1024.0f;
 	glMatrixMode(GL_PROJECTION);
@@ -540,7 +551,7 @@ GameApp::MainMenu(float time)
 			startupstate = 1;
 		}
 		if (lbuttondown && (float)p.x > 100.0f*xratio && (float)p.x < 300.0f*xratio && (float)p.y < 640.0f*yratio && (float)p.y > 560.0f*yratio) {
-			PostQuitMessage(0);
+			//FIXME: PostQuitMessage(0);
 		}
 		break;
 	case 1:
@@ -555,6 +566,7 @@ GameApp::MainMenu(float time)
 		Vector3f temp(0.0f,0.0f,0.0f);
 		chosenChar = 0;
 		Player *tempdata[50];
+#if 0
 		WIN32_FIND_DATA findData;
 		HANDLE tempHand = FindFirstFile("../characters/*.chr",&findData);
 		numChars = 1;
@@ -567,6 +579,7 @@ GameApp::MainMenu(float time)
 		for (i = 0; i < numChars; i++) {
 			characters[i] = tempdata[i];
 		}
+#endif
 		break;
 	}
 
@@ -612,6 +625,7 @@ GameApp::MainMenu(float time)
 void
 GameApp::print(const char* fmt, ...)
 {
+#if 0
 	int length = 0;
 	char string[256];
 	va_list args;
@@ -631,5 +645,6 @@ GameApp::print(const char* fmt, ...)
 	glCullFace(GL_FRONT);
 	glColor3f(1.0f,1.0f,1.0f);
 	glDisable(GL_COLOR_MATERIAL);
+#endif
 }
 

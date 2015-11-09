@@ -1,10 +1,12 @@
+#include <cstdio>
+#include <cstring>
 #include "model.hpp"
 
-void Model::UpdateTags(int f1, int f2, float offset)
+void
+Model::UpdateTags(int f1, int f2, float offset)
 {
 	Vector3f temp;
-	for(int i = 0; i < numTags; i++)
-	{
+	for (int i = 0; i < numTags; i++) {
 		tagPos[i].x = tags[f1][i].origin.x*(1.0f-offset) + tags[f2][i].origin.x*(offset);
 		tagPos[i].y = tags[f1][i].origin.y*(1.0f-offset) + tags[f2][i].origin.y*(offset);
 		tagPos[i].z = tags[f1][i].origin.z*(1.0f-offset) + tags[f2][i].origin.z*(offset);
@@ -15,11 +17,11 @@ void Model::UpdateTags(int f1, int f2, float offset)
 	}
 }
 
-int Model::FindTag(char *name)
+int
+Model::FindTag(char *name)
 {
-	for(int i = 0; i < numTags; i++)
-	{
-		if(!strcmp(name,tags[0][i].name))
+	for (int i = 0; i < numTags; i++) {
+		if (!std::strcmp(name,tags[0][i].name))
 			return i;
 	}
 	return -1;
@@ -29,11 +31,9 @@ Model::Model(char* filename)
 {
 	tagPos = NULL;
 	FILE* file;
-	file = fopen(filename,"rb");
+	file = std::fopen(filename,"rb");
 	texture = 0;
-	if(file)
-	{
-		
+	if (file) {
 		int tempint;
 		char tempchar[4];
 		int i;
@@ -42,50 +42,48 @@ Model::Model(char* filename)
 		TRIANGLE* tris;
 		VERTEX* verts;
 		
-		fread(tempchar,sizeof(char),4,file);
-		fread(&tempint,sizeof(int),1,file);
-		fread(name,sizeof(char),64,file);
-		fread(&flags,sizeof(int),1,file);
-		fread(&numFrames,sizeof(int),1,file);
-		fread(&numTags,sizeof(int),1,file);
-		fread(&numSurfaces,sizeof(int),1,file);
-		fread(&tempint,sizeof(int),1,file);
-		fread(&frameoffset,sizeof(int),1,file);
-		fread(&tagoffset,sizeof(int),1,file);
-		fread(&surfaceoffset,sizeof(int),1,file);
-		fread(&eofoffset,sizeof(int),1,file);
+		std::fread(tempchar,sizeof(char),4,file);
+		std::fread(&tempint,sizeof(int),1,file);
+		std::fread(name,sizeof(char),64,file);
+		std::fread(&flags,sizeof(int),1,file);
+		std::fread(&numFrames,sizeof(int),1,file);
+		std::fread(&numTags,sizeof(int),1,file);
+		std::fread(&numSurfaces,sizeof(int),1,file);
+		std::fread(&tempint,sizeof(int),1,file);
+		std::fread(&frameoffset,sizeof(int),1,file);
+		std::fread(&tagoffset,sizeof(int),1,file);
+		std::fread(&surfaceoffset,sizeof(int),1,file);
+		std::fread(&eofoffset,sizeof(int),1,file);
 		
 		meshes = new Mesh[numSurfaces];
-		fseek(file,frameoffset,SEEK_SET);
-        frames = new MODELFRAME[numFrames];
-		fread(frames,sizeof(MODELFRAME),numFrames,file);
+		std::fseek(file,frameoffset,SEEK_SET);
+        	frames = new MODELFRAME[numFrames];
+		std::fread(frames,sizeof(MODELFRAME),numFrames,file);
         
-		fseek(file,tagoffset,SEEK_SET);
+		std::fseek(file,tagoffset,SEEK_SET);
 		tags = new TAG*[numFrames];
-		for(i = 0; i < numFrames; i++)
-		{
+		for (i = 0; i < numFrames; i++) {
 			tags[i] = new TAG[numTags];
 			fread(tags[i],sizeof(TAG),numTags,file);
 		}
 		tagPos = new Vector3f[numTags];
 		long offset = surfaceoffset;
-		for(i = 0; i < numSurfaces; i++)
-		{
+		for (i = 0; i < numSurfaces; i++) {
 			int numread;
-			fseek(file,offset,SEEK_SET);
-			fread(&surface,sizeof(MODELSURFACE),1,file);
+			std::fseek(file,offset,SEEK_SET);
+			std::fread(&surface,sizeof(MODELSURFACE),1,file);
 			//surface.numTriangles=1;
 			
 			tris = new TRIANGLE[surface.numTriangles];
-			fseek(file,offset+surface.offsettriangles,SEEK_SET);
-			fread(tris,sizeof(TRIANGLE),surface.numTriangles,file);
-			fseek(file,offset+surface.offsetst,SEEK_SET);
+			std::fseek(file,offset+surface.offsettriangles,SEEK_SET);
+			std::fread(tris,sizeof(TRIANGLE),surface.numTriangles,file);
+			std::fseek(file,offset+surface.offsetst,SEEK_SET);
 			TEXCOORD *uv = new TEXCOORD[surface.numVerts];
-			fread(uv,sizeof(TEXCOORD),surface.numVerts,file);
+			std::fread(uv,sizeof(TEXCOORD),surface.numVerts,file);
 			
-			fseek(file,offset+surface.offsetxyznormal,SEEK_SET);
+			std::fseek(file,offset+surface.offsetxyznormal,SEEK_SET);
 			verts = new VERTEX[numFrames*surface.numVerts];
-			fread(verts,sizeof(VERTEX),numFrames*surface.numVerts,file);
+			std::fread(verts,sizeof(VERTEX),numFrames*surface.numVerts,file);
 			offset+=surface.size;
 			meshes[i].CreateMesh(surface,verts,tris,uv);
 			
@@ -95,45 +93,41 @@ Model::Model(char* filename)
 			tris = NULL;
 			verts = NULL;
 		}
-		fclose(file);
-	}
-	else
-	{
+		std:: fclose(file);
+	} else {
 		file = file;
 	}
 
 }
 
-void Model::Cleanup()
+void
+Model::Cleanup()
 {
 	int i;
-	if(meshes)
-	{
-		for(i = 0; i < numSurfaces; i++)
-		{
+	if (meshes) {
+		for (i = 0; i < numSurfaces; i++) {
 			meshes[i].Cleanup();
 		}
 		delete [] meshes;
 		meshes = NULL;
 	}
-	if(tags)
-	{
-		for(i =0; i < numTags; i++)
-		{
+
+	if (tags) {
+		for (i =0; i < numTags; i++) {
 			delete [] tags[i];
 		}
 		delete [] tags;
 		tags = NULL;
 	}
-	if(tagPos)
-	{
+
+	if (tagPos) {
 		delete [] tagPos;
 	}
-	
 }
 	 
 
-void Model::Mesh::CreateMesh(const Model::MODELSURFACE &surf, Model::VERTEX *verts, Model::TRIANGLE *tris, Model::TEXCOORD *uv)
+void
+Model::Mesh::CreateMesh(const Model::MODELSURFACE &surf, Model::VERTEX *verts, Model::TRIANGLE *tris, Model::TEXCOORD *uv)
 {
 	texIndex = 0;
 	this->numFrames =surf.numFrames;
@@ -143,9 +137,8 @@ void Model::Mesh::CreateMesh(const Model::MODELSURFACE &surf, Model::VERTEX *ver
 	this->numVerts = surf.numVerts;
 	int i,j;
 	float lat, longitude;
-    this->tris = new Triangle[surf.numTriangles];
-	for(i = 0; i < surf.numTriangles; i++)
-	{
+	this->tris = new Triangle[surf.numTriangles];
+	for (i = 0; i < surf.numTriangles; i++) {
 		this->tris[i].verts[0] = tris[i].indeces[0];
 		this->tris[i].verts[1] = tris[i].indeces[1];
 		this->tris[i].verts[2] = tris[i].indeces[2];
@@ -153,19 +146,16 @@ void Model::Mesh::CreateMesh(const Model::MODELSURFACE &surf, Model::VERTEX *ver
 
 	
 
-	for(i = 0; i < numFrames; i++)
-	{
+	for(i = 0; i < numFrames; i++) {
 		this->verts[i] = new Vector3f[surf.numVerts];
 		this->normals[i] = new Vector3f[surf.numVerts];
 
-		for(j = 0; j < surf.numVerts; j++)
-		{
+		for(j = 0; j < surf.numVerts; j++) {
 			this->verts[i][j].set((float)verts[i*surf.numVerts + j].x/64.0f,(float)verts[i*surf.numVerts + j].y/64.0f,(float)verts[i*surf.numVerts + j].z/64.0f);
-			if(i == 0 && j == 0){
+			if (i == 0 && j == 0) {
 				minPoint = this->verts[i][j];
 				maxPoint = this->verts[i][j];
-			}
-			else{
+			} else {
 				if(this->verts[i][j].x < minPoint.x) minPoint.x = this->verts[i][j].x;
 				if(this->verts[i][j].y < minPoint.y) minPoint.y = this->verts[i][j].y;
 				if(this->verts[i][j].z < minPoint.z) minPoint.z = this->verts[i][j].z;
@@ -188,12 +178,11 @@ void Model::Mesh::CreateMesh(const Model::MODELSURFACE &surf, Model::VERTEX *ver
 	this->uv = uv;
 }
 
-void Model::Mesh::TransformPermanent(Matrix4f &m)
+void
+Model::Mesh::TransformPermanent(Matrix4f &m)
 {
-	for(int i = 0; i < numFrames; i++)
-	{
-		for(int j = 0; j < numVerts; j++)
-		{
+	for (int i = 0; i < numFrames; i++) {
+		for (int j = 0; j < numVerts; j++) {
 			verts[i][j] = m*verts[i][j];
 		}
 	}
@@ -201,65 +190,58 @@ void Model::Mesh::TransformPermanent(Matrix4f &m)
 	minPoint = m*minPoint;
 }
 
-void Model::Mesh::Cleanup()
+void
+Model::Mesh::Cleanup()
 {
 	int i;
-	if(tris)
-	{
+	if (tris) {
 		delete [] tris;
 		tris = NULL;
 	}
-	if(verts)
-	{
-		for(i = 0; i < numFrames; i++)
-		{
-			if(verts[i])
-			{
+	if (verts) {
+		for (i = 0; i < numFrames; i++) {
+			if (verts[i]) {
 				delete [] verts[i];
 				verts[i] = NULL;
 			}
 		}
 		delete [] verts;
 	}
-	if(normals)
-	{
-		for(i = 0; i < numFrames; i++)
-		{
-			if(normals[i])
-			{
+
+	if (normals) {
+		for (i = 0; i < numFrames; i++) {
+			if (normals[i]) {
 				delete [] normals[i];
 				normals[i] = NULL;
 			}
 		}
 		delete [] normals;
 	}
-	if(uv)
-	{
+
+	if (uv) {
 		delete [] uv;
 	}
-
-	
 }
 
-void Model::draw(Light *l)
+void
+Model::draw(Light *l)
 {
 	glBindTexture(GL_TEXTURE_2D,texture);
-	for(int i = 0; i < numSurfaces; i++)
-	{
+	for (int i = 0; i < numSurfaces; i++) {
 		meshes[i].draw(l,modelMatrix);
 	}
 }
 
-void Model::draw(Light *l, Vector3f p, int f1, int f2,float offset)
+void
+Model::draw(Light *l, Vector3f p, int f1, int f2,float offset)
 {
-	for(int i = 0; i < numSurfaces; i++)
-	{
+	for (int i = 0; i < numSurfaces; i++) {
 		meshes[i].draw(l,modelMatrix,p,f1,f2,offset);
 	}
-	
 }
 
-void Model::Mesh::draw(Light *l,Matrix4f m)
+void
+Model::Mesh::draw(Light *l,Matrix4f m)
 {
 	Vector3f color(1.0f,1.0f,1.0f);
 	Vector3f ambient(0.2f,0.2f,0.2f);
@@ -273,11 +255,8 @@ void Model::Mesh::draw(Light *l,Matrix4f m)
 	glEnable(GL_TEXTURE_2D);
 
 	float outcolor[3];
-	if(l)
-	{
-		
-		for(int i = 0; i < numTriangles; i++)
-		{
+	if (l) {
+		for (int i = 0; i < numTriangles; i++) {
 			glBegin(GL_TRIANGLES);
 			v = m*verts[0][tris[i].verts[0]];
 			n = inverse * normals[0][tris[i].verts[0]];
@@ -304,16 +283,9 @@ void Model::Mesh::draw(Light *l,Matrix4f m)
 				glNormal3f(n.x,n.y,n.z);
 				glVertex3f(v.x,v.y,v.z);
 			glEnd();
-			
-				
 		}
-	
-	}
-	else
-	{
-		for(int i = 0; i < numTriangles; i++)
-		{
-			
+	} else {
+		for (int i = 0; i < numTriangles; i++) {
 			glBegin(GL_TRIANGLES);
 				v = m*verts[0][tris[i].verts[0]];
 				glVertex3f(v.x,v.y,v.z);
@@ -329,7 +301,8 @@ void Model::Mesh::draw(Light *l,Matrix4f m)
 	glDisable(GL_LIGHT0);
 }
 
-void Model::Mesh::draw(Light *l,Matrix4f m,Vector3f p,int f1, int f2,float offset)
+void
+Model::Mesh::draw(Light *l,Matrix4f m,Vector3f p,int f1, int f2,float offset)
 {
 	Vector3f color(1.0f,1.0f,1.0f);
 	Vector3f ambient(0.1f,0.1f,0.1f);
@@ -345,10 +318,8 @@ void Model::Mesh::draw(Light *l,Matrix4f m,Vector3f p,int f1, int f2,float offse
 	//glEnable(GL_LIGHT0);
 	glColor3f(1.0f,1.0f,1.0f);
 	float outcolor[3];
-	if(l)
-	{
-		for(int i = 0; i < numTriangles; i++)
-		{
+	if (l) {
+		for (int i = 0; i < numTriangles; i++) {
 			glBegin(GL_TRIANGLES);
 			v = m*(verts[f1][tris[i].verts[0]]*(1.0f-offset)+verts[f2][tris[i].verts[0]]*offset);
 			n = inverse * (normals[f1][tris[i].verts[0]]*(1.0f-offset)+normals[f2][tris[i].verts[0]]*offset);
@@ -379,24 +350,19 @@ void Model::Mesh::draw(Light *l,Matrix4f m,Vector3f p,int f1, int f2,float offse
 				glVertex3f(v.x,v.y,v.z);
 			
 			glEnd();
-			
-				
 		}
-		
-	
 	}
 	glDisable(GL_LIGHTING);
 	glDisable(GL_LIGHT0);
 }
 
-Animation* FindAnimation(int state, Animation* a, int numA)
+Animation *
+FindAnimation(int state, Animation* a, int numA)
 {
-	for(int i = 0; i < numA; i++)
-	{  
+	for (int i = 0; i < numA; i++) {
 		if(a[i].state == state)
 			return a + i;
 	}
 	return NULL;
 }
-
 

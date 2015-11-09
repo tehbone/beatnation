@@ -2,12 +2,10 @@
  * @file Camera.cpp
  * Definitions for camera related functions.
  */
-#include <gl/gl.h>
+#include <GL/gl.h>
 #include "camera.hpp"
+#include "objects.hpp"
 
-#define STATIC_CAMERA 1
-#define DYNAMIC_CAMERA 2
-#define FREE_CAMERA 3
 #define FLYBY_LENGTH 1.0f
 
 void 

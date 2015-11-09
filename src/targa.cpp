@@ -1,9 +1,10 @@
 //targa.cpp
-//yeah, I know, I'm getting lazy.
+#include <cstring>
 #include "targa.hpp"
 
 targaData *LoadTarga(char* filename)
 {
+#if 0
 	targaData* data;
 	FILE* file;
 	file = fopen(filename,"rb");
@@ -97,5 +98,10 @@ targaData *LoadTarga(char* filename)
 	data->width = width;
 	data->height = height;
 	return data;
-	
+#endif
+	targaData *data = new targaData;
+	data->data = new char[4*4];
+	std::memset(data->data, 0xFF, (sizeof *data->data) * 16);
+	data->bpp = 32;
+	data->width = data->height = 2;
 }
