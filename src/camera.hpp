@@ -1,83 +1,14 @@
-/****************************************
-*										*
-*				Camera.hpp				*
-*	Class defines and methods for the	*
-*	Camera system						*
-*										*
-****************************************/
-
-/************************************
-*	Versioning Information			*
-************************************/
-// 4/12/2004
-// Started versioning - GS
-
-
-#ifndef CAMERA_H
-#define CAMERA_H
+/**
+ * @file camera.hpp
+ * Class defines and methods for the camera system.
+ */
+#ifndef CAMERA_HPP_
+#define CAMERA_HPP_
 
 #include "utils.hpp"
-#include "objects.hpp"
-#include <gl/gl.h>
-//#include <gl/glaux.h>
 
-
-#define STATIC_CAMERA 1
-#define DYNAMIC_CAMERA 2
-#define FREE_CAMERA 3
-#define FLYBY_LENGTH 1.0f;
-
-
-class Camera
-{
-public:
-	//constructors
-
-	//Initializers
-	void initialize();
-	void initialize(Vector3f up, Vector3f origin, Vector3f target);
-
-	
-    void pivot(bool right,float t);
-//*************************************************************
-// void move(Vector3f)
-// moves the camera based on what type it is
-// STATIC_CAMERA: stationary camera. works fine
-// DYNAMIC_CAMERA: stationary camera within a certain distance
-//        otherwise, follows player (buggy)
-// EYE_CAMERA: First Person camera. Not implemented
-// argument is the new poistion vector of the target.
-//*************************************************************
-	void move(Vector3f v,Vector3f dir);
-
-//*************************************************************
-// void switchtoView(int, Vector3f, Object*)
-// switches to the new view specified by view
-// t is the new position vector
-//*************************************************************
-	void switchtoView(int view, Vector3f t, Object *object);
-
-//*************************************************************
-// void view(float)
-// sets up the OpenGL modelview matrix correctly.  Also handles
-// transition from one view to another.
-// transition is done linearly.
-//*************************************************************
-	void view(float t);
-	void setView(Vector3f f,Vector3f pos);
-//*************************************************************
-//  Getters and Setters
-	void setTarget(Vector3f target);
-	void setOrigin(Vector3f origin);
-	void setUp(Vector3f up);
-	Vector3f getTarget();
-	Vector3f getOrigin();
-	Vector3f getUp();
-	Vector3f getDirection();
-	Vector3f getRightVector();
-//*************************************************************
-	
-public:
+class Camera {
+public: /* TODO: Really should be private */
 	Matrix4f camMatrix; //not used currently
 	Vector3f up, origin, target; //used to create a basis for the camera
 	Vector3f oldpos, newpos; //used for camera transistions.
@@ -89,6 +20,39 @@ public:
 	Vector3f oldFacing;
 	Vector3f targetDir;
 	float camheight;
+
+public:
+	void initialize();
+	void initialize(Vector3f up, Vector3f origin, Vector3f target);
+
+	void pivot(bool right, float t);
+
+	/**
+	 * Moves the camera based on the type.
+	 * @param v
+	 * @param dir
+	 */
+	void move(Vector3f v,Vector3f dir);
+
+	/**
+	 * Switches to the new view specified by view.
+	 * @param t the new position vector
+	 * @param object
+	 */
+	void switchtoView(int view, Vector3f t, Object *object);
+
+	void view(float t);
+	void setView(Vector3f f,Vector3f pos);
+
+	void setTarget(Vector3f target);
+	void setOrigin(Vector3f origin);
+	void setUp(Vector3f up);
+	Vector3f getTarget();
+	Vector3f getOrigin();
+	Vector3f getUp();
+	Vector3f getDirection();
+	Vector3f getRightVector();
 };
 
-#endif
+#endif /* CAMERA_HPP_ */
+

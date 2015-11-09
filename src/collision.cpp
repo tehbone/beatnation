@@ -1,19 +1,9 @@
-/************************************
-*	Versioning Information			*
-************************************/
 
-
-
-// Collision Detection functions and methods
-#include <malloc.h>
-#include <stdio.h>
-#include <math.h>
-#include <cstdlib>
+#include <iostream>
 #include <windows.h>
 #include <gl/gl.h>
-//#include "memtrack.cpp"
-#include "gfx.hpp"
 #include "collision.hpp"
+#include "gfx.hpp"
 #include "model.hpp"
 #include "t_utils.cpp"
 
@@ -22,76 +12,93 @@ CollideMap<CollideObject*, CollideObject*, bool> OctTree::collideMap(false);
 CollideMap<CollideObject*, CollideObject*, bool> OctTree::excludeMap(false);
 CollideMap<OctTree*, CollideObject*, DLinkedList<int>*> OctTree::meshMap(HASHMAP_DEFAULT_BUCKETS, NULL);
 
-void hashmapTest();
-void octtreeTest();
-void pause();
+void hashmapTest(void);
+void octtreeTest(void);
+void pause(void);
 
-//*********************************************************************************
-void pause()
-//*********************************************************************************
+void
+pause()
 {
-	long int sum = 30000;
-	for(int i = 0; i < 30000; i++) printf("Pausing...\n");
+	long sum = 30000;
+	for(int i = 0; i < 30000; i++)
+		std::cout << "Pausing..." << std::endl;
 }
 
-//*********************************************************************************
-void hashmapTest()
-//*********************************************************************************
+void
+hashmapTest()
 {
+	long q;
+	long numObjs = 700000;
 
-	printf("Testing Hashmap...");
-
-	long int q;
-	long int numObjs = 700000;
-
-	for(q = 0; q < numObjs; q++){
-
-		long int i;
-		long int numReps = 20000;
+	std::cout << "Testing Hashmap..." << std::endl;
+	for (q = 0; q < numObjs; q++) {
+		long i;
+		long numReps = 20000;
 	
-		HashMap<float, float>* map = new HashMap<float, float>((float) 0.0);
-		for(i = 0; i < numReps; i++)
+		HashMap<float, float>* map = new HashMap<float, float>(0.f);
+		for (i = 0; i < numReps; i++);
 			//map->Put((float) i, (float) i + 1);
 
 		//map->printDistribution();
-
-		printf("all put...");
-		for(i = numReps / 2; i < numReps; i++)
+		std::cout << "all put..." << std::endl;
+		for (i = numReps / 2; i < numReps; i++)
 			map->Get((float) i);
 
 		delete map;
 	}
-	
-
 }
 
+void
+BoundBox::draw()
+ {
+	glBegin(GL_LINES);
+	glVertex3f(pos.x - extents.x, pos.y - extents.y, pos.z - extents.z);
+	glVertex3f(pos.x - extents.x, pos.y - extents.y, pos.z + extents.z);
+	glVertex3f(pos.x - extents.x, pos.y - extents.y, pos.z - extents.z);
+	glVertex3f(pos.x - extents.x, pos.y + extents.y, pos.z - extents.z);
+	glVertex3f(pos.x - extents.x, pos.y - extents.y, pos.z - extents.z);
+	glVertex3f(pos.x + extents.x, pos.y - extents.y, pos.z - extents.z);
 
+	glVertex3f(pos.x - extents.x, pos.y + extents.y, pos.z + extents.z);
+	glVertex3f(pos.x - extents.x, pos.y + extents.y, pos.z - extents.z);
+	glVertex3f(pos.x - extents.x, pos.y + extents.y, pos.z + extents.z);
+	glVertex3f(pos.x - extents.x, pos.y - extents.y, pos.z + extents.z);
+	glVertex3f(pos.x - extents.x, pos.y + extents.y, pos.z + extents.z);
+	glVertex3f(pos.x + extents.x, pos.y + extents.y, pos.z + extents.z);
 
+	glVertex3f(pos.x + extents.x, pos.y - extents.y, pos.z + extents.z);
+	glVertex3f(pos.x + extents.x, pos.y - extents.y, pos.z - extents.z);
+	glVertex3f(pos.x + extents.x, pos.y - extents.y, pos.z + extents.z);
+	glVertex3f(pos.x + extents.x, pos.y + extents.y, pos.z + extents.z);
+	glVertex3f(pos.x + extents.x, pos.y - extents.y, pos.z + extents.z);
+	glVertex3f(pos.x - extents.x, pos.y - extents.y, pos.z + extents.z);
 
-//---------------------------------------------------------------------------------
-OctTree::OctTree(Vector3f& actualPos, float extent)
-//---------------------------------------------------------------------------------
+	glVertex3f(pos.x + extents.x, pos.y + extents.y, pos.z - extents.z);
+	glVertex3f(pos.x + extents.x, pos.y - extents.y, pos.z - extents.z);
+	glVertex3f(pos.x + extents.x, pos.y + extents.y, pos.z - extents.z);
+	glVertex3f(pos.x + extents.x, pos.y + extents.y, pos.z + extents.z);
+	glVertex3f(pos.x + extents.x, pos.y + extents.y, pos.z - extents.z);
+	glVertex3f(pos.x - extents.x, pos.y + extents.y, pos.z - extents.z);
+	glEnd();
+}
+OctTree::OctTree(Vector3f &actualPos, float extent)
 {
 	init(NULL, actualPos, extent);
 }
 
-//---------------------------------------------------------------------------------
-OctTree::OctTree(OctTree* parent, Vector3f& actualPos, float extent)
-//---------------------------------------------------------------------------------
+OctTree::OctTree(OctTree *parent, Vector3f &actualPos, float extent)
 {
 	init(parent, actualPos, extent);
 }
 
-//---------------------------------------------------------------------------------
 OctTree::~OctTree()
-//---------------------------------------------------------------------------------
 {
 	// Delete tree (if it exists)
 	//printf("Deleting...");
-	if(subTrees != NULL){
+	if(subTrees != NULL) {
 		int i;
-		for(i = 0; i < 8; i++){
-			if(subTrees[i] != NULL){
+		for(i = 0; i < 8; i++) {
+			if(subTrees[i] != NULL) {
 				delete subTrees[i];
 				subTrees[i] = NULL;
 			}
@@ -113,17 +120,15 @@ OctTree::~OctTree()
 	//printf("Deleting 2...");
 }
 
-//---------------------------------------------------------------------------------
-bool OctTree::AddObject(OctTree* space, CollideObject* object)
-//---------------------------------------------------------------------------------
+bool
+OctTree::AddObject(OctTree *space, CollideObject *object)
 {
 	return AddObject(space, object, true);
 }
 
 
-//---------------------------------------------------------------------------------
-bool OctTree::AddObject(OctTree* space, CollideObject* object, bool doCollide)
-//---------------------------------------------------------------------------------
+bool
+OctTree::AddObject(OctTree *space, CollideObject *object, bool doCollide)
 {
 	// Assumption:  The object is always inserted into a box that is big enough for
 	// that object.  Since we should only insert in the root space, this should hold.
@@ -146,27 +151,27 @@ bool OctTree::AddObject(OctTree* space, CollideObject* object, bool doCollide)
 	return returnValue;
 }
 
-//---------------------------------------------------------------------------------
-bool OctTree::addObject(OctTree* space, CollideObject* object, bool doCollide)
-//---------------------------------------------------------------------------------
+bool
+OctTree::addObject(OctTree *space, CollideObject *object, bool doCollide)
 {
 
 	bool returnValue = false;
 
 	DLinkedList<OctTree*>* fringe = NULL;
-    fringe = DLinkedList_AddHeadEntry<OctTree*>(fringe, space, 10);
+  	fringe = DLinkedList_AddHeadEntry<OctTree*>(fringe, space, 10);
 	DLinkedList<OctTree*>* currFringeEntry = fringe;
 	DLinkedList<OctTree*>* tail = fringe;
 
 	object->remainingSpaces--;	// Subtract 1 for the first space this object is put into.
 	object->container = space;
 
-	while(currFringeEntry != NULL){
+	while (currFringeEntry != NULL){
 		
 		OctTree* currSpace = currFringeEntry->object;
 
 		// Determine if this object can be the object's container
-		if(currSpace->encloses(object->boundBox)) object->container = currSpace;
+		if (currSpace->encloses(object->boundBox))
+			object->container = currSpace;
 		
 		// Figure out how many subspaces we can partition the object into
 		unsigned int objectSpaces = currSpace->partitionBoundingBox(object);
@@ -176,7 +181,7 @@ bool OctTree::addObject(OctTree* space, CollideObject* object, bool doCollide)
 		// next object.
 		bool canPartitionObject = 
 			(object->remainingSpaces - numSpaces + 1 >= 0);
-		if(!canPartitionObject){
+		if (!canPartitionObject) {
 			currFringeEntry = currFringeEntry->nextList;
 			continue;
 		}
@@ -220,22 +225,18 @@ bool OctTree::addObject(OctTree* space, CollideObject* object, bool doCollide)
 			//...and if the boxes aren't getting too small.
 			largeBoxes;
 
-
-		if(partitionObject){
-			
-			if(doCollide){
+		if (partitionObject) {
+			if (doCollide) {
 				returnValue = currSpace->collideObjectLocal(object) | returnValue;
 			}
 
 			DLinkedList<OctTree*>* subspaces =
 				currSpace->partitionIntoSubspaces(object, objectSpaces);
 
-			if(subspaces != NULL){
-
+			if (subspaces != NULL) {
 				object->remainingSpaces = 
 					object->remainingSpaces - *(subspaces->listSize) + 1;
-
-				if(object->remainingSpaces < 0){
+				if(object->remainingSpaces < 0) {
 					returnValue = returnValue;
 				}
 
@@ -249,27 +250,19 @@ bool OctTree::addObject(OctTree* space, CollideObject* object, bool doCollide)
 				currFringeEntry = currFringeEntry->nextList;
 				fringe = DLinkedList_Remove<OctTree*>(fringe, currEntry);
 				DLinkedList_DeleteTail<OctTree*>(currEntry); currEntry = NULL;
-
 			}
-
-
-		}
-		else{
+		} else {
 			currFringeEntry = currFringeEntry->nextList;
 			continue;
 		}
-
-
 	}
 
 	// Finish up downward collisions, add the object to the fringe spaces
-	for(currFringeEntry = fringe;
-		currFringeEntry != NULL;
-		currFringeEntry = currFringeEntry->nextList)
-	{
+	for (currFringeEntry = fringe;
+	     currFringeEntry != NULL;
+	     currFringeEntry = currFringeEntry->nextList) {
 		OctTree* currSpace = currFringeEntry->object;
-
-		if(doCollide){
+		if (doCollide) {
 			returnValue = currSpace->collideObjectLocal(object) | returnValue;
 			returnValue = collideObjectRecursiveDown(object, currSpace) | returnValue;
 		}
@@ -280,43 +273,41 @@ bool OctTree::addObject(OctTree* space, CollideObject* object, bool doCollide)
 		addToSpace(object, currSpace);
 	}
 
-	DLinkedList_DeleteTail<OctTree*>(fringe); fringe = NULL; tail = NULL; currFringeEntry = NULL;
+	DLinkedList_DeleteTail<OctTree*>(fringe);
+	fringe = NULL;
+	tail = NULL;
+	currFringeEntry = NULL;
 
 	return returnValue;
 }
 
-//---------------------------------------------------------------------------------
-inline bool OctTree::addInitialTriangles(OctTree* space, CollideObject* object)
-//---------------------------------------------------------------------------------
+bool
+OctTree::addInitialTriangles(OctTree *space, CollideObject *object)
 {
-	if(object->model != NULL){
+	if (object->model != NULL) {
 		Model::Mesh mesh = *(object->model->meshes);
 		int numTriangles = mesh.numTriangles;
 		DLinkedList<int>* triangles = NULL;
-		
-		for(int i = 0; i < numTriangles; i++)
+		for (int i = 0; i < numTriangles; i++)
 			triangles = DLinkedList_AddHeadEntry(triangles, i, 11);
 
 		MultiKey<OctTree*, CollideObject*> key;
 		key.keyA = space;
 		key.keyB = object;
 		meshMap.Put(key, triangles);
-		
+
 		return true;
 	}
 	return false;
 }
 
-//---------------------------------------------------------------------------------
-inline void OctTree::addToSpace(CollideObject* object, OctTree* space)
-//---------------------------------------------------------------------------------
+void
+OctTree::addToSpace(CollideObject *object, OctTree *space)
 {
-
 	// Add to space/object list
 	space->objectList = DLinkedList_AddHeadEntry<CollideObject*>(space->objectList, object, 12);
 	// Add to object/space list
 	object->spaceList = DLinkedList_AddHeadEntry<OctTree*>(object->spaceList, space, 13);
-	
 }
 
 
@@ -1424,7 +1415,7 @@ inline CollideInfo* OctTree::boundingBoxCollision(CollideObject *objA, CollideOb
 	*/
 
 	if(finalNormal.magnitude() != 1.0f){
-		printf("YEAH");
+		std::cout << "YEAH" << std::endl;
 	}
 	c->normal = finalNormal;
 /*
