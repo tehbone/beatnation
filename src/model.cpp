@@ -1,16 +1,3 @@
-/****************************************
-*										*
-*				Model.cpp				*
-*		class defines for model loading	*
-*										*
-****************************************/
-
-/************************************
-*	Versioning Information			*
-************************************/
-// 4/12/2004
-// Started versioning - GS
-
 #include "model.hpp"
 
 void Model::UpdateTags(int f1, int f2, float offset)

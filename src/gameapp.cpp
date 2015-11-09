@@ -1,26 +1,20 @@
-/************************************
-*									*
-*			   GameApp.cpp			*
-*	Defines for everything dealing	*
-*		with the main game app.		*
-*									*
-************************************/
-
-/************************************
-*	Versioning Information			*
-************************************/
-// 4/12/2004
-// Started versioning - GS
-
+/**
+ * @file gameapp.cpp
+ * Defines for everything dealing with the main game app.
+ */
+#include <gl/gl.h>
+#include <gl/glu.h>
 #include "gameapp.hpp"
+#include "level.hpp"
+#include "light.hpp"
 #include "targa.hpp"
 
-StringMap *GameApp::animationResource = NULL;
-StringMap *GameApp::modelResource = NULL;
+StringMap *GameApp::animationResource;
+StringMap *GameApp::modelResource;
 unsigned int GameApp::font;
+
 GameApp::GameApp(int w, int h, bool *keys) : width(w), height(h)
 {
-	
 	numChars = 10;
 	characters = NULL;
 	this->keys = keys;
@@ -45,13 +39,34 @@ GameApp::GameApp(int w, int h, bool *keys) : width(w), height(h)
 
 	HFONT oldfont = (HFONT)SelectObject(hDC,f);
 	//wglUseFontBitmaps(hDC,32,96,font);
-	if(!wglUseFontOutlines(hDC,0,255,font,0.0f,0.2f,WGL_FONT_POLYGONS,gmf))
+	if (!wglUseFontOutlines(hDC,0,255,font,0.0f,0.2f,WGL_FONT_POLYGONS,gmf))
 		gmf[0] = gmf[0];
 	//SelectObject(hDC,oldfont);
 	//DeleteObject(f);
 }
 
-bool GameApp::InitGL()
+GameApp::~GameApp()
+{
+	if(level) {
+		level->cleanup();
+		delete level;
+	}
+
+	level = NULL;
+	if (characters) {
+		for (int i = 0; i < numChars; i++) {
+			delete characters[i];
+			characters[i] = NULL;
+		}
+		delete [] characters;
+		characters = NULL;
+	}
+	glDeleteLists(font,256);
+	kill();
+}
+
+bool
+GameApp::InitGL()
 {
 	glClearColor(0.0f,0.0f,0.0f,1.0f);
 	glShadeModel(GL_SMOOTH);
@@ -74,7 +89,8 @@ bool GameApp::InitGL()
 	return true;
 }
 
-void GameApp::kill()							// Properly Kill The Window
+void
+GameApp::kill()							// Properly Kill The Window
 {
 	if(modelResource)
 	{
@@ -89,8 +105,11 @@ void GameApp::kill()							// Properly Kill The Window
 #endif
 }
 
-
-void GameApp::RenderScene()
+/**
+ * HOLY FUNCTION LENGTH, BATMAN!
+ */
+void
+GameApp::RenderScene()
 {
 	float xslide;
 	Vector3f pos(0.0f,0.0f,80.0f);
@@ -117,150 +136,136 @@ void GameApp::RenderScene()
 	static float splashtime = 0;
 	float blah = charfloat;
 	GetCursorPos(&p);
-	switch(state)
-	{
+	switch(state) {
 	case GAME_STARTUP:
 		glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluOrtho2D(0,(double)width,-(double)height,0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	
-		
-	switch(startupstate)
-	{
-	case 0:
-		brightness+=time;
-		if(brightness > 1.0f )
-		{
-			brightness = 1.0f;
-			startupstate = 1;
+		glLoadIdentity();
+		gluOrtho2D(0,(double)width,-(double)height,0);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();	
+		switch(startupstate) {
+		case 0:
+			brightness+=time;
+			if (brightness > 1.0f) {
+				brightness = 1.0f;
+				startupstate = 1;
+			}
+			break;
+		case 1:
+			splashtime+=time;
+			if (splashtime > 5.0f) {
+				startupstate = 2;
+			}
+			break;
+		case 2:
+			brightness-=time;
+			if (brightness < 0.0f) {
+				brightness = 0.0f;
+				SetCursorPos(width/2,height/2);
+				state = GAME_MAIN_MENU;
+				brightness = 0.0f;
+				startupstate = 0;
+			}
+			break;
 		}
-		break;
-	case 1:
-		splashtime+=time;
-		if(splashtime >5.0f)
-		{
-			startupstate = 2;
-		}
-		break;
-	case 2:
-		brightness-=time;
-		if(brightness < 0.0f)
-		{
-			brightness = 0.0f;
-			SetCursorPos(width/2,height/2);
-			state = GAME_MAIN_MENU;
-			brightness = 0.0f;
-			startupstate = 0;
-		}
-	}
-	glColor3f(brightness,brightness,brightness);
-	glBindTexture(GL_TEXTURE_2D,textures[GAME_STARTUP]);
-	glBegin(GL_QUADS);
+
+		glColor3f(brightness,brightness,brightness);
+		glBindTexture(GL_TEXTURE_2D,textures[GAME_STARTUP]);
+		glBegin(GL_QUADS);
 		glTexCoord2f(0.0f,0.0f); glVertex2i(0,-height);
 		glTexCoord2f(1.0f,0.0f); glVertex2i(width,-height);
 		glTexCoord2f(1.0f,1.0f); glVertex2i(width,0);
 		glTexCoord2f(0.0f,1.0f); glVertex2i(0,0);
-	glEnd();
+		glEnd();
 		break;
 	case GAME_MAIN_MENU:
 		glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluOrtho2D(0,(double)width,-(double)height,0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	
-	
-	switch(startupstate)
-	{
-	case 0:
-		brightness+=time;
-		if(brightness >= 1.0f)
-		{
-			brightness = 1.0f;				
-		}
-			if(lbuttondown && (float)p.x > 100.0f*xratio && (float)p.x < 300.0f*xratio && (float)p.y < 480.0f*yratio && (float)p.y > 400.0f*yratio)
-		{
-			startupstate = 1;
-		}
-		if(lbuttondown && (float)p.x > 100.0f*xratio && (float)p.x < 300.0f*xratio && (float)p.y < 640.0f*yratio && (float)p.y > 560.0f*yratio)
-		{
-			PostQuitMessage(0);
-		}
-		break;
-	case 1:
-		brightness-=time*2.0f;
-		if(brightness <= 0.0f)
-		{
-			brightness <= 0.0f;
-			startupstate = 2;
-		}
-	 break;
-	case 2:
-		state = GAME_PLAYER_SELECT;
-		
-		Vector3f temp(0.0f,0.0f,0.0f);
-		chosenChar = 0;
-		Player *tempdata[50];
-		WIN32_FIND_DATA findData;
-		HANDLE tempHand = FindFirstFile("../characters/*.chr",&findData);
-		numChars = 1;
-		char filename[1024];
-		sprintf(filename,"../characters/%s",findData.cFileName);
-		tempdata[0] = new Player(filename);
-		while(FindNextFile(tempHand,&findData) && numChars < 50)
-		{
-			numChars++;
+		glLoadIdentity();
+		gluOrtho2D(0,(double)width,-(double)height,0);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		switch(startupstate) {
+		case 0:
+			brightness+=time;
+			if (brightness >= 1.0f) {
+				brightness = 1.0f;				
+			}
+
+			if (lbuttondown && (float)p.x > 100.0f*xratio && (float)p.x < 300.0f*xratio && (float)p.y < 480.0f*yratio && (float)p.y > 400.0f*yratio) {
+				startupstate = 1;
+			}
+			if (lbuttondown && (float)p.x > 100.0f*xratio && (float)p.x < 300.0f*xratio && (float)p.y < 640.0f*yratio && (float)p.y > 560.0f*yratio) {
+				PostQuitMessage(0);
+			}
+			break;
+		case 1:
+			brightness-=time*2.0f;
+			if (brightness <= 0.0f) {
+				brightness <= 0.0f;
+				startupstate = 2;
+			}
+			break;
+		case 2:
+			state = GAME_PLAYER_SELECT;
+			Vector3f temp(0.0f,0.0f,0.0f);
+			chosenChar = 0;
+			Player *tempdata[50];
+			WIN32_FIND_DATA findData;
+			HANDLE tempHand = FindFirstFile("../characters/*.chr",&findData);
+			numChars = 1;
+			char filename[1024];
 			sprintf(filename,"../characters/%s",findData.cFileName);
-			tempdata[numChars-1] = new Player(filename);
-		}
-		characters = new Player*[numChars];
-		for(i = 0; i < numChars; i++)
-		{
-			characters[i] = tempdata[i];
-		}
+			tempdata[0] = new Player(filename);
+			while (FindNextFile(tempHand,&findData) && numChars < 50) {
+				numChars++;
+				sprintf(filename,"../characters/%s",findData.cFileName);
+				tempdata[numChars-1] = new Player(filename);
+			}
 		
-		
-		break;
-	}
-	glColor3f(brightness,brightness,brightness);
-	glBindTexture(GL_TEXTURE_2D,textures[GAME_MAIN_MENU]);
-	glBegin(GL_QUADS);
+			characters = new Player*[numChars];
+			for (i = 0; i < numChars; i++) {
+				characters[i] = tempdata[i];
+			}
+			break;
+		}
+
+		glColor3f(brightness,brightness,brightness);
+		glBindTexture(GL_TEXTURE_2D,textures[GAME_MAIN_MENU]);
+		glBegin(GL_QUADS);
 		glTexCoord2f(0.0f,0.0f); glVertex2i(0,-height);
 		glTexCoord2f(1.0f,0.0f); glVertex2i(width,-height);
 		glTexCoord2f(1.0f,1.0f); glVertex2i(width,0);
 		glTexCoord2f(0.0f,1.0f); glVertex2i(0,0);
-	glEnd();
-	glBindTexture(GL_TEXTURE_2D,startgame);
-	glBegin(GL_QUADS);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D,startgame);
+		glBegin(GL_QUADS);
 		glTexCoord2f(0.0f,1.0f); glVertex2f(100.0f*xratio,-400*yratio);
 		glTexCoord2f(0.0f,0.0f); glVertex2f(100.0f*xratio,-480*yratio);
 		glTexCoord2f(1.0f,0.0f); glVertex2f(300.0f*xratio,-480*yratio);
 		glTexCoord2f(1.0f,1.0f); glVertex2f(300.0f*xratio,-400*yratio);
-	glEnd();
-	glBindTexture(GL_TEXTURE_2D,options);
-	glBegin(GL_QUADS);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D,options);
+		glBegin(GL_QUADS);
 		glTexCoord2f(0.0f,1.0f); glVertex2f(100.0f*xratio,-480*yratio);
 		glTexCoord2f(0.0f,0.0f); glVertex2f(100.0f*xratio,-560*yratio);
 		glTexCoord2f(1.0f,0.0f); glVertex2f(300.0f*xratio,-560*yratio);
 		glTexCoord2f(1.0f,1.0f); glVertex2f(300.0f*xratio,-480*yratio);
-	glEnd();
-	glBindTexture(GL_TEXTURE_2D,quit);
-	glBegin(GL_QUADS);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D,quit);
+		glBegin(GL_QUADS);
 		glTexCoord2f(0.0f,1.0f); glVertex2f(100.0f*xratio,-560*yratio);
 		glTexCoord2f(0.0f,0.0f); glVertex2f(100.0f*xratio,-640*yratio);
 		glTexCoord2f(1.0f,0.0f); glVertex2f(300.0f*xratio,-640*yratio);
 		glTexCoord2f(1.0f,1.0f); glVertex2f(300.0f*xratio,-560*yratio);
-	glEnd();
-	glTranslatef(p.x,-p.y,0.0f); 
-	glBindTexture(GL_TEXTURE_2D,cursor);
-	glBegin(GL_QUADS);
+		glEnd();
+		glTranslatef(p.x,-p.y,0.0f); 
+		glBindTexture(GL_TEXTURE_2D,cursor);
+		glBegin(GL_QUADS);
 		glTexCoord2f(0.0f,1.0f); glVertex2f(0,0);
 		glTexCoord2f(0.0f,0.0f); glVertex2f(0,-30.0f*yratio);
 		glTexCoord2f(1.0f,0.0f); glVertex2f(30*xratio,-30.0f*yratio);
 		glTexCoord2f(1.0f,1.0f); glVertex2f(30*xratio,0);
-	glEnd();
+		glEnd();
 		break;
 	case GAME_PLAYER_SELECT:
 		glColor3f(0.75f,0.75f,0.75f);
@@ -272,48 +277,39 @@ void GameApp::RenderScene()
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D,textures[GAME_PLAYER_SELECT]);
 		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,3.0f); glVertex2i(0,0);
-			glTexCoord2f(0.0f,0.0f); glVertex2i(0,-height);
-			glTexCoord2f(4.0f,0.0f); glVertex2i(width,-height);
-			glTexCoord2f(4.0f,3.0f); glVertex2i(width,0);
+		glTexCoord2f(0.0f,3.0f); glVertex2i(0,0);
+		glTexCoord2f(0.0f,0.0f); glVertex2i(0,-height);
+		glTexCoord2f(4.0f,0.0f); glVertex2i(width,-height);
+		glTexCoord2f(4.0f,3.0f); glVertex2i(width,0);
 		glEnd();
 		glColor3f(1.0f,1.0f,1.0f);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		
-			
-		blah = blah;
-		if(charfloat != (float)chosenChar)
-		{
-			if(up)
-			{
-				
-				if((float)chosenChar < charfloat)
-				{
+		blah = blah; /* FIXME: I think this was for breakpoints? */
+		/* FIXME: HOLY IF CHAIN */
+		if (charfloat != (float)chosenChar) {
+			if(up) {
+				if ((float)chosenChar < charfloat) {
 					charfloat += 0.01f;
-					if(charfloat > (float)(numChars+chosenChar)) charfloat = (float)chosenChar;
+					if (charfloat > (float)(numChars+chosenChar))
+						charfloat = (float)chosenChar;
+				} else {
+					charfloat += 0.01f;
+					if ((float)chosenChar < charfloat)
+						charfloat = (float)chosenChar;
 				}
-				else
-				{
-					charfloat += 0.01f;
-					if((float)chosenChar < charfloat) charfloat = (float)chosenChar;
+			} else {
+				if((float)chosenChar > charfloat) {
+					charfloat -= 0.01f;
+					if(charfloat+(float)numChars < (float)chosenChar)
+						charfloat = (float)chosenChar;
+				} else {
+					charfloat -= 0.01f;
+					if((float)chosenChar > charfloat)
+						charfloat = (float)chosenChar;
 				}
 			}
-			else
-			{
-				if((float)chosenChar > charfloat)
-				{
-					charfloat -= 0.01f;
-					if(charfloat+(float)numChars < (float)chosenChar) charfloat = (float)chosenChar;
-				}
-				else
-				{
-					charfloat -= 0.01f;
-					if((float)chosenChar > charfloat) charfloat = (float)chosenChar;
-				}
-			}
-		}
-		else
-		{
+		} else {
 			glDisable(GL_TEXTURE_2D);
 			glTranslatef(100.0f,-600.0f,0.0f);
 			glScalef(3.0f,3.0f,3.0f);
@@ -324,17 +320,16 @@ void GameApp::RenderScene()
 			glEnable(GL_TEXTURE_2D);
 			glClear(GL_DEPTH_BUFFER_BIT);
 		}
+
 		glColor3f(1.0f,1.0f,1.0f);
-		if(keys['W'])
-		{
+		if (keys['W']) {
 			chosenChar++;
 			if(chosenChar >= numChars)
 				chosenChar = 0;
 			up = true;
 			keys['W'] = false;
 		}
-		if(keys['S'])
-		{
+		if (keys['S']) {
 			chosenChar--;
 			if(chosenChar < 0)
 				chosenChar = numChars-1;
@@ -342,8 +337,7 @@ void GameApp::RenderScene()
 			keys['S'] = false;
 		}
 		
-		for( i = 0; i < numChars; i++)
-		{
+		for( i = 0; i < numChars; i++) {
 			float x = cosf(((float)i-charfloat)*2.0f*3.14859f/(float)numChars)*300.0f+100.0f;
 			float y = sinf(((float)i-charfloat)*2.0f*3.14859f/(float)numChars)*300.0f-height/2;
 			
@@ -366,35 +360,32 @@ void GameApp::RenderScene()
 			}
 					
 		}
+
 		glDisable(GL_TEXTURE_2D);
 		glColor3f(1.0f,0.0f,0.0f);
 		xslide = sinf(angle)*50.0f+525.0f;
 		glBegin(GL_TRIANGLES);
-			glVertex2f(xslide+20.0f*sqrtf(3),-height/2+20.0f);
-			glVertex2f(xslide,-height/2);
-			glVertex2f(xslide+20.0f*sqrtf(3),-height/2-20.0f);
+		glVertex2f(xslide+20.0f*sqrtf(3),-height/2+20.0f);
+		glVertex2f(xslide,-height/2);
+		glVertex2f(xslide+20.0f*sqrtf(3),-height/2-20.0f);
 		glEnd();
 		glEnable(GL_TEXTURE_2D);
 		angle+=time*3.14859f/0.5f;
-		if(angle > 3.14859f)
-		{
+		if (angle > 3.14859f) {
 			angle = 0.0f;
 		}
 
-		
 		glColor3f(1.0f,1.0f,1.0f);
 		glTranslatef((float)p.x,-(float)p.y,0.0f);
 		glBindTexture(GL_TEXTURE_2D,cursor);
 		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,1.0f); glVertex2f(0,0);
-			glTexCoord2f(0.0f,0.0f); glVertex2f(0,-30.0f*yratio);
-			glTexCoord2f(1.0f,0.0f); glVertex2f(30*xratio,-30.0f*yratio);
-			glTexCoord2f(1.0f,1.0f); glVertex2f(30*xratio,0);
+		glTexCoord2f(0.0f,1.0f); glVertex2f(0,0);
+		glTexCoord2f(0.0f,0.0f); glVertex2f(0,-30.0f*yratio);
+		glTexCoord2f(1.0f,0.0f); glVertex2f(30*xratio,-30.0f*yratio);
+		glTexCoord2f(1.0f,1.0f); glVertex2f(30*xratio,0);
 		glEnd();
 
-		if(keys[VK_RETURN])
-		{
-
+		if (keys[VK_RETURN]) {
 			state = GAME_MAIN;
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();									    
@@ -403,15 +394,13 @@ void GameApp::RenderScene()
 			glLoadIdentity();
 			level->setPlayer(characters[chosenChar]);
 			
-			for(i = 0; i < 1/*level->MAXCHARS*/; i++)
-			{
+			for (i = 0; i < 1/*level->MAXCHARS*/; i++) {
 				Player* tempplayer = new Player("../characters/hihat.chr");
 				level->AddChar(tempplayer);//new Player(*(characters[rand() %numChars])));
 			}
-			for(i = 0; i < numChars; i++)
-			{
-				if(i != chosenChar)
-				{
+
+			for (i = 0; i < numChars; i++) {
+				if (i != chosenChar) {
 					delete characters[i];
 					characters[i] = NULL;
 				}
@@ -421,39 +410,34 @@ void GameApp::RenderScene()
 		}
 		break;
 	case GAME_MAIN:
-		
 		glLoadIdentity();
-		
-		
 		level->Update(keys);
 		level->draw(color);
-		
 		break;
 	}
-	
 }
 
-void GameApp::ReSizeGLScene(int width, int height)				// Resize And Initialize The GL Window
+void
+GameApp::ReSizeGLScene(int width, int height)
 {
 	this->width = width;
 	this->height = height;
-	if (height==0)												// Prevent A Divide By Zero By
-	{
-		height=1;												// Making Height Equal One
+	if (height==0) {
+		height=1;
 	}
 
-	glViewport(0, 0, width, height);							// Reset The Current Viewport
-	glMatrixMode(GL_PROJECTION);								// Select The Projection Matrix
-	glLoadIdentity();									        // Reset The Projection Matrix
+	glViewport(0, 0, width, height);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
 
 	// Calculate The Aspect Ratio Of The Window
 	gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,10.0f,10000.0f);
-
-	glMatrixMode(GL_MODELVIEW);									// Select The Modelview Matrix
-	glLoadIdentity();											// Reset The Modelview Matrix
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 }
 
-unsigned int GameApp::LoadTexture(char *filename)
+unsigned int
+GameApp::LoadTexture(char *filename)
 {
 	unsigned int texID;
 	FILE* file = NULL;
@@ -482,7 +466,8 @@ unsigned int GameApp::LoadTexture(char *filename)
 #endif
 }
 
-void GameApp::Startup(float time)
+void
+GameApp::Startup(float time)
 {
 	float splashtime = 0.0f;
 	int startupstate = 0;
@@ -492,47 +477,45 @@ void GameApp::Startup(float time)
 	gluOrtho2D(0,(double)width,-(double)height,0);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	
 		
-	switch(startupstate)
-	{
+	switch(startupstate) {
 	case 0:
 		brightness+=time;
-		if(brightness > 1.0f )
-		{
+		if (brightness > 1.0f) {
 			brightness = 1.0f;
 			startupstate = 1;
 		}
 		break;
 	case 1:
 		splashtime+=time;
-		if(splashtime >5.0f)
-		{
+		if (splashtime > 5.0f) {
 			startupstate = 2;
 		}
 		break;
 	case 2:
 		brightness-=time;
-		if(brightness < 0.0f)
-		{
+		if (brightness < 0.0f) {
 			brightness = 0.0f;
 			SetCursorPos(width/2,height/2);
 			state = GAME_MAIN_MENU;
 			brightness = 0.0f;
 			startupstate = 0;
 		}
+		break;
 	}
+
 	glColor3f(brightness,brightness,brightness);
 	glBindTexture(GL_TEXTURE_2D,textures[GAME_STARTUP]);
 	glBegin(GL_QUADS);
-		glTexCoord2f(0.0f,0.0f); glVertex2i(0,-height);
-		glTexCoord2f(1.0f,0.0f); glVertex2i(width,-height);
-		glTexCoord2f(1.0f,1.0f); glVertex2i(width,0);
-		glTexCoord2f(0.0f,1.0f); glVertex2i(0,0);
+	glTexCoord2f(0.0f,0.0f); glVertex2i(0,-height);
+	glTexCoord2f(1.0f,0.0f); glVertex2i(width,-height);
+	glTexCoord2f(1.0f,1.0f); glVertex2i(width,0);
+	glTexCoord2f(0.0f,1.0f); glVertex2i(0,0);
 	glEnd();
 }		
 
-void GameApp::MainMenu(float time)
+void
+GameApp::MainMenu(float time)
 {
 	float brightness = 0.0f;
 	int startupstate = 0;
@@ -547,98 +530,87 @@ void GameApp::MainMenu(float time)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	
-	
-	switch(startupstate)
-	{
+	switch(startupstate) {
 	case 0:
 		brightness+=time;
-		if(brightness >= 1.0f)
-		{
+		if (brightness >= 1.0f) {
 			brightness = 1.0f;				
 		}
-			if(lbuttondown && (float)p.x > 100.0f*xratio && (float)p.x < 300.0f*xratio && (float)p.y < 480.0f*yratio && (float)p.y > 400.0f*yratio)
-		{
+		if (lbuttondown && (float)p.x > 100.0f*xratio && (float)p.x < 300.0f*xratio && (float)p.y < 480.0f*yratio && (float)p.y > 400.0f*yratio) {
 			startupstate = 1;
 		}
-		if(lbuttondown && (float)p.x > 100.0f*xratio && (float)p.x < 300.0f*xratio && (float)p.y < 640.0f*yratio && (float)p.y > 560.0f*yratio)
-		{
+		if (lbuttondown && (float)p.x > 100.0f*xratio && (float)p.x < 300.0f*xratio && (float)p.y < 640.0f*yratio && (float)p.y > 560.0f*yratio) {
 			PostQuitMessage(0);
 		}
 		break;
 	case 1:
 		brightness-=time*2.0f;
-		if(brightness <= 0.0f)
-		{
+		if (brightness <= 0.0f) {
 			brightness <= 0.0f;
 			startupstate = 2;
 		}
-	 break;
+		break;
 	case 2:
 		state = GAME_PLAYER_SELECT;
-		
 		Vector3f temp(0.0f,0.0f,0.0f);
-		
 		chosenChar = 0;
 		Player *tempdata[50];
 		WIN32_FIND_DATA findData;
 		HANDLE tempHand = FindFirstFile("../characters/*.chr",&findData);
 		numChars = 1;
 		tempdata[0] = new Player(findData.cFileName);
-		while(FindNextFile(tempHand,&findData) && numChars < 50)
-		{
+		while (FindNextFile(tempHand,&findData) && numChars < 50) {
 			numChars++;
 			tempdata[numChars-1] = new Player(findData.cFileName);
 		}
 		characters = new Player*[numChars];
-		for(i = 0; i < numChars; i++)
-		{
+		for (i = 0; i < numChars; i++) {
 			characters[i] = tempdata[i];
 		}
-		
-		
 		break;
 	}
+
 	glColor3f(brightness,brightness,brightness);
 	glBindTexture(GL_TEXTURE_2D,textures[GAME_MAIN_MENU]);
 	glBegin(GL_QUADS);
-		glTexCoord2f(0.0f,0.0f); glVertex2i(0,-height);
-		glTexCoord2f(1.0f,0.0f); glVertex2i(width,-height);
-		glTexCoord2f(1.0f,1.0f); glVertex2i(width,0);
-		glTexCoord2f(0.0f,1.0f); glVertex2i(0,0);
+	glTexCoord2f(0.0f,0.0f); glVertex2i(0,-height);
+	glTexCoord2f(1.0f,0.0f); glVertex2i(width,-height);
+	glTexCoord2f(1.0f,1.0f); glVertex2i(width,0);
+	glTexCoord2f(0.0f,1.0f); glVertex2i(0,0);
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D,startgame);
 	glBegin(GL_QUADS);
-		glTexCoord2f(0.0f,1.0f); glVertex2f(100.0f*xratio,-400*yratio);
-		glTexCoord2f(0.0f,0.0f); glVertex2f(100.0f*xratio,-480*yratio);
-		glTexCoord2f(1.0f,0.0f); glVertex2f(300.0f*xratio,-480*yratio);
-		glTexCoord2f(1.0f,1.0f); glVertex2f(300.0f*xratio,-400*yratio);
+	glTexCoord2f(0.0f,1.0f); glVertex2f(100.0f*xratio,-400*yratio);
+	glTexCoord2f(0.0f,0.0f); glVertex2f(100.0f*xratio,-480*yratio);
+	glTexCoord2f(1.0f,0.0f); glVertex2f(300.0f*xratio,-480*yratio);
+	glTexCoord2f(1.0f,1.0f); glVertex2f(300.0f*xratio,-400*yratio);
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D,options);
 	glBegin(GL_QUADS);
-		glTexCoord2f(0.0f,1.0f); glVertex2f(100.0f*xratio,-480*yratio);
-		glTexCoord2f(0.0f,0.0f); glVertex2f(100.0f*xratio,-560*yratio);
-		glTexCoord2f(1.0f,0.0f); glVertex2f(300.0f*xratio,-560*yratio);
-		glTexCoord2f(1.0f,1.0f); glVertex2f(300.0f*xratio,-480*yratio);
+	glTexCoord2f(0.0f,1.0f); glVertex2f(100.0f*xratio,-480*yratio);
+	glTexCoord2f(0.0f,0.0f); glVertex2f(100.0f*xratio,-560*yratio);
+	glTexCoord2f(1.0f,0.0f); glVertex2f(300.0f*xratio,-560*yratio);
+	glTexCoord2f(1.0f,1.0f); glVertex2f(300.0f*xratio,-480*yratio);
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D,quit);
 	glBegin(GL_QUADS);
-		glTexCoord2f(0.0f,1.0f); glVertex2f(100.0f*xratio,-560*yratio);
-		glTexCoord2f(0.0f,0.0f); glVertex2f(100.0f*xratio,-640*yratio);
-		glTexCoord2f(1.0f,0.0f); glVertex2f(300.0f*xratio,-640*yratio);
-		glTexCoord2f(1.0f,1.0f); glVertex2f(300.0f*xratio,-560*yratio);
+	glTexCoord2f(0.0f,1.0f); glVertex2f(100.0f*xratio,-560*yratio);
+	glTexCoord2f(0.0f,0.0f); glVertex2f(100.0f*xratio,-640*yratio);
+	glTexCoord2f(1.0f,0.0f); glVertex2f(300.0f*xratio,-640*yratio);
+	glTexCoord2f(1.0f,1.0f); glVertex2f(300.0f*xratio,-560*yratio);
 	glEnd();
 	glTranslatef(p.x,-p.y,0.0f); 
 	glBindTexture(GL_TEXTURE_2D,cursor);
 	glBegin(GL_QUADS);
-		glTexCoord2f(0.0f,1.0f); glVertex2f(0,0);
-		glTexCoord2f(0.0f,0.0f); glVertex2f(0,-30.0f*yratio);
-		glTexCoord2f(1.0f,0.0f); glVertex2f(30*xratio,-30.0f*yratio);
-		glTexCoord2f(1.0f,1.0f); glVertex2f(30*xratio,0);
+	glTexCoord2f(0.0f,1.0f); glVertex2f(0,0);
+	glTexCoord2f(0.0f,0.0f); glVertex2f(0,-30.0f*yratio);
+	glTexCoord2f(1.0f,0.0f); glVertex2f(30*xratio,-30.0f*yratio);
+	glTexCoord2f(1.0f,1.0f); glVertex2f(30*xratio,0);
 	glEnd();
-	
 }
 
-void GameApp::print(const char* fmt, ...)
+void
+GameApp::print(const char* fmt, ...)
 {
 	int length = 0;
 	char string[256];
@@ -650,7 +622,6 @@ void GameApp::print(const char* fmt, ...)
 		vsprintf(string,fmt,args);
 	va_end(args);
 	
-	
 	glCullFace(GL_BACK);
 	glEnable(GL_COLOR_MATERIAL);
 	glPushAttrib(GL_LIST_BIT);
@@ -661,3 +632,4 @@ void GameApp::print(const char* fmt, ...)
 	glColor3f(1.0f,1.0f,1.0f);
 	glDisable(GL_COLOR_MATERIAL);
 }
+

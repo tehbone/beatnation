@@ -1,14 +1,5 @@
-/************************************
-*	Versioning Information			*
-************************************/
-// 4/12/2004
-// Started versioning - GS
-
-
-// main.h header file for program stabilization
-#ifndef _MAIN_H
-#define _MAIN_H
-
+#ifndef MAIN_HPP_
+#define MAIN_HPP_
 
 // Windows Defines
 #define WIN32_LEAN_AND_MEAN	
@@ -33,8 +24,6 @@ extern HGLRC           hRC;							// Permanent Rendering Context
 extern HDC             hDC;							// Private GDI Device Context
 extern HWND            hWnd;						// Holds Our Window Handle
 extern HINSTANCE       hInstance;					// Holds The Instance Of The Application
-
-
 
 
 // This is our basic 3D point/vector class
@@ -108,4 +97,5 @@ public:
 	float x, y, z;						
 };
 
-#endif
+#endif /* MAIN_HPP_ */
+
