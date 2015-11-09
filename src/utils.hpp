@@ -15,14 +15,12 @@
 #define UTILS_H
 
 #include "math.h"
-#include <windows.h>
-#include <gl/gl.h>
+#include <GL/gl.h>
 //#include <gl/glaux.h>
-#include <gl/glu.h>
+#include <GL/glu.h>
 #include "targa.hpp"
 
 extern bool lbuttondown;
-extern HDC hDC;
 
 unsigned int LoadTGATexture(char* filename);
 //primatives

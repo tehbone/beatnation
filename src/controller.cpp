@@ -4,6 +4,12 @@
 #include "physics.hpp"
 #include "t_utils.cpp"
 
+/* FIXME replace with SDL defines */
+#define VK_NUMPAD4 (92 | (1 << 30))
+#define VK_NUMPAD6 (94 | (1 << 30))
+#define VK_NUMPAD8 (96 | (1 << 30))
+#define VK_NUMPAD5 (93 | (1 << 30))
+
 bool
 PlayerController::ProcessKeys(bool *keys, float time)
 {
@@ -113,7 +119,7 @@ PlayerController::ProcessKeys(bool *keys, float time)
 			keys[VK_NUMPAD8] = false;
 		}
 
-		if(keys[VK_NUMPAD5]) {	
+		if (keys[VK_NUMPAD5]) {	
 			((Player*)controlledObject)->switchState(ATTACK4);
 			keys[VK_NUMPAD5] = false;
 		}

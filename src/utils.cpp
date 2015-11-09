@@ -1,12 +1,5 @@
-/****************************************
-*										*
-*				Utils.cpp				*
-*    definitions for the utilities		*
-*										*
-****************************************/
-
+#include <cstring>
 #include "utils.hpp"
-
 
 Vector3f Vector3f::cross(const Vector3f v)
 {
@@ -418,7 +411,7 @@ unsigned int LoadTGATexture(char *filename)
 	unsigned int texID;
 	targaData *data = LoadTarga(filename);
 	glGenTextures(1,&texID);
-	glBindTexture(GL_TEXTURE_2D,texID);
+	glBindTexture(GL_TEXTURE_2D, texID);
 	glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,data->width,data->height,0,GL_RGBA,GL_UNSIGNED_BYTE,data->data);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
@@ -451,7 +444,7 @@ void DeleteStringMap(StringMap *s)
 	StringMap* temp;
 	while(it != NULL)
 	{
-		delete it->object;
+		//FIXME: delete it->object;
 		temp = it;
 		it = it->nextMap;
 		delete temp;
@@ -462,7 +455,7 @@ void* FindEntry(StringMap *s, char* key)
 {
 	for(StringMap *it=s; it !=NULL; it = it->nextMap)
 	{
-		if(!strcmp(key,it->key))
+		if(!std::strcmp(key,it->key))
 			return it->object;
 	}
 	return NULL;

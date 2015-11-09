@@ -1,27 +1,7 @@
-/************************************
-*									*
-*	Objects.cpp						*
-*									*	
-*	Defines for most objects in the	*
-*		game.						*
-*									*
-************************************/
-
-/************************************
-*	Versioning Information			*
-************************************/
-// 4/12/2004
-// Rerouted all the object constructors through init() functions.
-// Fixed bug with unset Object::controller variable.  - Love, GS
-
-
-
-#include <windows.h>
-#include <gl/gl.h>
+#include <GL/gl.h>
+#include <cstdlib>
 #include "objects.hpp"
 #include "collision.hpp"
-#include <math.h>
-
 
 void Object::init(){
 	PhysicsEntity::init();
@@ -347,7 +327,7 @@ void Player::dumbAI()
 {
 	if(state == IDLE)
 	{
-		switchState(11+(rand()%4));
+		switchState(11+(std::rand()%4));
 		curAnimation = curAnimation;
 	}
 }

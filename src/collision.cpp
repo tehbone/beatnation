@@ -1,10 +1,10 @@
 
 #include <iostream>
-#include <windows.h>
-#include <gl/gl.h>
+#include <GL/gl.h>
 #include "collision.hpp"
 #include "gfx.hpp"
 #include "model.hpp"
+#include "physics.hpp"
 #include "t_utils.cpp"
 
 
@@ -665,7 +665,7 @@ DLinkedList<int>* OctTree::borderTrianglesIntersecting(OctTree* space, CollideOb
 {
 	DLinkedList<int>* returnList = NULL;
 
-	if(triangles == NULL || *(triangles) == NULL || object->model == NULL) return false;
+	if(triangles == NULL || *(triangles) == NULL || object->model == NULL) return NULL;
 
 	DLinkedList<int>* triangleIndices = *(triangles);
 
@@ -717,7 +717,7 @@ DLinkedList<int>* OctTree::trianglesInside(OctTree* space, CollideObject* object
 {
 	DLinkedList<int>* returnList = NULL;
 	
-	if(triangles == NULL || *(triangles) == NULL || object->model == NULL) return false;
+	if(triangles == NULL || *(triangles) == NULL || object->model == NULL) return NULL;
 
 	DLinkedList<int>* triangleIndices = *(triangles);
 

@@ -7,6 +7,11 @@
 
 #include "utils.hpp"
 
+//FIXME: make into an enum
+#define STATIC_CAMERA 1
+#define DYNAMIC_CAMERA 2
+#define FREE_CAMERA 3
+class Object;
 class Camera {
 public: /* TODO: Really should be private */
 	Matrix4f camMatrix; //not used currently

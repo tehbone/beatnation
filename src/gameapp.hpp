@@ -4,8 +4,6 @@
 #ifndef GAMEAPP_HPP_
 #define GAMEAPP_HPP_
 
-#include <windows.h>
-
 #define GAME_STARTUP 0
 #define GAME_MAIN_MENU 1
 #define GAME_PLAYER_SELECT 2
@@ -14,6 +12,8 @@
 #define GAME_LOADING 5
 
 class Level;
+class Player;
+class StringMap;
 
 class GameApp {
 public:
@@ -37,7 +37,7 @@ public:
 	Player** characters;
 	int chosenChar;
 	int numChars;
-	GLYPHMETRICSFLOAT gmf[256];
+	//GLYPHMETRICSFLOAT gmf[256];
 
 public:
 	GameApp(int w, int h, bool *keys);

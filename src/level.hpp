@@ -4,13 +4,11 @@
 #ifndef LEVEL_HPP_
 #define LEVEL_HPP_
 
-#include <windows.h>
-#include <gl/gl.h>
+#include <GL/gl.h>
 #include "collision.hpp"
 #include "objects.hpp"
 #include "utils.hpp"
 #include "camera.hpp"
-#include <stdio.h>
 #include "light.hpp"
 #include "model.hpp"
 

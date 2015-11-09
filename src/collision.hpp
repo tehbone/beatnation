@@ -67,7 +67,7 @@ public:
 	CollideObject & operator=(CollideObject c);
 };
 
-struct CollideInfo; {
+struct CollideInfo {
 	BoundBox box;
 	Vector3f normal;
 };
@@ -122,7 +122,7 @@ protected:
 	// Check to see whether an object is completely enclosed by this space
 	bool encloses(BoundBox& object);
 	// Check to see whether a point is contained in this space
-	bool OctTree::contains(Vector3f* point);
+	bool contains(Vector3f* point);
 	// Check to see whether an object completely encloses this space
 	bool isEnclosedBy(BoundBox& object);
 
@@ -212,7 +212,11 @@ protected:
 	static bool addObject(OctTree* space, CollideObject* object, bool doCollide);
 
 	static CollideMap<CollideObject*, CollideObject*, bool> collideMap;
-	
+
+public: //FIXME: WHY
+	static CollideMap<CollideObject*, CollideObject*, bool> excludeMap;
+
+protected:
 	// Used to store mesh triangle locations in OctTrees
 	static CollideMap<OctTree*, CollideObject*, DLinkedList<int>*> meshMap;
 
@@ -257,7 +261,7 @@ protected:
 	//
 	static DLinkedList<CollideInfo*>* boundingBoxMeshCollision(CollideObject *objA, CollideObject *objB, OctTree* space);
 
-	static line bool addInitialTriangles(OctTree* space, CollideObject* object);
+	static bool addInitialTriangles(OctTree* space, CollideObject* object);
 };
 
 class CollideSpace {

@@ -1,6 +1,7 @@
 #ifndef T_UTILS_CPP
 #define T_UTILS_CPP
 
+#include <cstdlib>
 #include "t_utils.hpp"
 
 // Linked list methods
@@ -291,7 +292,7 @@ template <class KEY, class VALUE>
 void HashMap<KEY, VALUE>::init(int numBuckets, VALUE nullValue)
 //---------------------------------------------------------------------------------
 {
-	buckets = (HashBucket<KEY, VALUE>**) calloc(numBuckets, sizeof(HashBucket<KEY, VALUE>*));
+	buckets = (HashBucket<KEY, VALUE>**) std::calloc(numBuckets, sizeof(HashBucket<KEY, VALUE>*));
 	this->numBuckets = numBuckets;
 	this->numEntries = 0;
 	this->nullValue = nullValue;
@@ -316,7 +317,7 @@ HashMap<KEY,VALUE>::~HashMap()
 		}
 	}
 
-	free(buckets);
+	std::free(buckets);
 	buckets = NULL;
 
 }
@@ -326,7 +327,8 @@ template <class KEY, class VALUE>
 unsigned int HashMap<KEY,VALUE>::hash(KEY key)
 //---------------------------------------------------------------------------------
 {
-	unsigned int conversion = (unsigned int) key;
+	//FIXME: better hashing.
+	unsigned int conversion = *reinterpret_cast<unsigned int*>(&key);
 	return conversion ^ (conversion >> 1);
 }
 
@@ -566,7 +568,7 @@ template <class KEYA, class KEYB, class VALUE>
 void CollideMap<KEYA, KEYB, VALUE>::init(int numBuckets, VALUE nullValue)
 //---------------------------------------------------------------------------------
 {
-	buckets = (HashBucket<MultiKey<KEYA, KEYB>, VALUE>**) calloc(numBuckets, sizeof(HashBucket<MultiKey<KEYA, KEYB>, VALUE>*));
+	buckets = (HashBucket<MultiKey<KEYA, KEYB>, VALUE>**) std::calloc(numBuckets, sizeof(HashBucket<MultiKey<KEYA, KEYB>, VALUE>*));
 	this->numBuckets = numBuckets;
 	this->numEntries = 0;
 	this->nullValue = nullValue;
@@ -591,7 +593,7 @@ CollideMap<KEYA, KEYB, VALUE>::~CollideMap()
 		}
 	}
 
-	free(buckets);
+	std::free(buckets);
 	buckets = NULL;
 
 }
@@ -601,7 +603,7 @@ template <class KEYA, class KEYB, class VALUE>
 unsigned int CollideMap<KEYA, KEYB, VALUE>::hash(MultiKey <KEYA, KEYB> key)
 //---------------------------------------------------------------------------------
 {
-	unsigned int conversion = (unsigned int) key.keyA + (unsigned int) key.keyB;
+	unsigned int conversion = *reinterpret_cast<unsigned int*>(key.keyA) + *reinterpret_cast<unsigned int*>(key.keyB);
 	return conversion ^ (conversion >> 1);
 }
 

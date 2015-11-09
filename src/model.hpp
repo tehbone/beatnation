@@ -1,27 +1,9 @@
-/****************************************
-*										*
-*				Model.h					*
-*		class defines for model loading	*
-*										*
-****************************************/
+#ifndef MODEL_HPP_
+#define MODEL_HPP_
 
-/************************************
-*	Versioning Information			*
-************************************/
-// 4/12/2004
-// Started versioning - GS
-// Made mesh public, for collisions - GS
-// Added equals operator for mesh - GS
-
-
-#include <stdio.h>
 #include "utils.hpp"
-#include <windows.h>
-#include <gl/gl.h>
-//#include <gl/glaux.h>
 #include "light.hpp"
-#ifndef MODEL_H
-#define MODEL_H
+
 
 
 class Model;
@@ -163,11 +145,5 @@ typedef struct
 } Animation;
 
 Animation* FindAnimation(int state, Animation* a, int numA);
-#endif
-
-
-
-			
-			
-
+#endif /* MODEL_HPP_ */
 	
